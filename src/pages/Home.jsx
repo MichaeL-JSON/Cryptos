@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { BrowserRouter, Link } from 'react-router-dom'
 
 const navigation = [
-  { name: 'Portfolio', href: '#' },
-  { name: 'Converter', href: '#' },
-  { name: 'News', href: '#' },
-  { name: 'About', href: '#' },
+  { name: 'Portfolio', href: '/portfolio' },
+  { name: 'Converter', href: '/converter' },
+  { name: 'News', href: '/news' },
+  { name: 'About', href: 'about' },
 ]
 
 export default function Home() {
@@ -38,9 +39,9 @@ export default function Home() {
           </div>
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              <a key={item.name} href={item.href} className="text-xl font-semibold leading-6 text-gray-900">
+              <Link key={item.name} to={item.href} className="text-xl font-semibold leading-6 text-gray-900">
                 {item.name}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
