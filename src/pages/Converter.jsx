@@ -1,11 +1,7 @@
-import React from 'react';
+import React from "react";
 
 const Converter = () => {
-    return (
-        <div>
-            Converter
-        </div>
-    );
+  return <div>Converter</div>;
 };
 
 export default Converter;
