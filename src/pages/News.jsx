@@ -1,7 +1,13 @@
 import React from "react";
 
 const News = () => {
-  return <div>News</div>;
+    // Page news author Vozhlak
+    //Comment
+    return (
+        <div>
+            News
+        </div>
+    );
 };
 
 export default News;
