@@ -2,6 +2,7 @@ import React from 'react';
 
 const News = () => {
     // Page news author Vozhlak
+    //Comment
     return (
         <div>
             News
