@@ -8,6 +8,7 @@ const Converter = () => {
     currency: "usd",
     days: 14
   });
+
   console.log(data);
   return <div>Converter</div>;
 };
