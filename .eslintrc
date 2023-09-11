@@ -17,7 +17,8 @@
     "no-self-compare": "error",
     "no-duplicate-imports": ["error", { "includeExports": true }],
     "no-new-native-nonconstructor": "error",
-    "no-template-curly-in-string": "error"
+    "no-template-curly-in-string": "error",
+    "react/prop-types": "off"
   },
   "settings": {
     "react": {
