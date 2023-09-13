@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 
+import { news } from "../data/news";
+import PostNews from "../components/PostNews/PostNews";
+
 const News = () => {
-  const getData = () => {
-    const result = [];
+  const [data, setData] = useState([]);
+  const [displayed, setDisplayed] = useState(10);
 
-    for (let i = 0; i < 10; i++) {
-      result.push(
-        <div className="w-full h-[45rem] bg-slate-400 mt-6 rounded-[1.5rem]"></div>
-      );
-    }
-
-    return result;
+  const showMore = () => {
+    setDisplayed(prev => prev + 10);
   };
+
+  useEffect(() => {
+    const getData = () => {
+      setTimeout(() => {
+        setData(news.content);
+      }, 3000);
+    };
+    getData();
+    // console.log(news.content);
+  }, []);
 
   return (
     <LayoutBorderRadius>
@@ -22,7 +30,7 @@ const News = () => {
             type="text"
             name="price"
             id="price"
-            className="block w-full rounded-md border-0 py-2.5 pl-3 pr-20 text-gray-900 font-medium ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 py-2.5 pl-3 pr-20 text-gray-900 font-medium ring-1 ring-inset ring-gray-300 tracking-widest placeholder:text-gray-400 focus:outline-0 sm:text-sm sm:leading-6"
             placeholder="vol"
           />
           <div className="absolute inset-y-0 right-5 flex items-center">
@@ -104,7 +112,33 @@ const News = () => {
           </svg>
         </div> */}
       </div>
-      <div>{getData()}</div>
+      <div>
+        {data.length > 0 ? (
+          data
+            .slice(0, displayed)
+            .map(item => (
+              <PostNews
+                key={item.title + item.date}
+                title={item.title}
+                content={item.content}
+                image={item.image}
+              />
+            ))
+        ) : (
+          <div className="flex justify-center items-center py-16">
+            Loading...
+          </div>
+        )}
+      </div>
+      {(data.length > 0 && data.length === displayed) ||
+        (data.length > 0 && (
+          <button
+            className="block mx-auto mt-16 border-2 p-2 rounded-lg"
+            onClick={showMore}
+          >
+            Добавить ещё 10 новостей
+          </button>
+        ))}
     </LayoutBorderRadius>
   );
 };
