@@ -54,9 +54,11 @@ const PostNews = ({ title, content, image }) => {
   }, []);
 
   return (
-    <div className={`relative w-full h-auto mt-8 border-2 rounded-[1.5rem]`}>
+    <div
+      className={`relative w-full h-auto mt-5 md:mt-8 border-2 rounded-md md:rounded-[1.5rem]`}
+    >
       <img
-        className="w-full h-[400px] object-cover rounded-t-[1.5rem]"
+        className="w-full h-[400px] object-cover rounded-md md:rounded-t-[1.5rem]"
         src={image}
         alt=""
       />
