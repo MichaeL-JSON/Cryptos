@@ -1,16 +1,16 @@
 import React from "react";
-import { useGetCoinChartQuery } from "../redux";
+// import { useGetCoinChartQuery } from "../redux";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
+import { FormContainerConverter } from "../components/converter";
 
 const Converter = () => {
   // для теста вытащим data здесь
-  const { data } = useGetCoinChartQuery({
-    id: "bitcoin",
-    currency: "usd",
-    days: 14
-  });
+  // const { data } = useGetCoinChartQuery({
+  //   id: "bitcoin",
+  //   currency: "usd",
+  //   days: 14
+  // });
 
-  console.log(data);
   return (
     <div>
       <LayoutBorderRadius>
@@ -39,7 +39,9 @@ const Converter = () => {
             show all
           </div>
         </div>
-        <div className="w-full h-[45rem] bg-slate-400 mt-6 rounded-[1.5rem]"></div>
+        <div className="mt-6">
+          <FormContainerConverter />
+        </div>
       </LayoutBorderRadius>
     </div>
   );
