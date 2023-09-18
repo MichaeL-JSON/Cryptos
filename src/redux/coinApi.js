@@ -19,8 +19,16 @@ export const coinApi = createApi({
       transformResponse: response => ({
         body: response.prices
       })
+    }),
+    getCoinsData: build.query({
+      query: page =>
+        `markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=${page}&sparkline=false&locale=en`
     })
   })
 });
 
-export const { useGetCoinByIdQuery, useGetCoinChartQuery } = coinApi;
+export const {
+  useGetCoinByIdQuery,
+  useGetCoinChartQuery
+  // useGetCoinsDataQuery
+} = coinApi;
