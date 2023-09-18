@@ -51,7 +51,7 @@ const News = () => {
   const renderButton = () => {
     const total = filteredData.length > 0 ? filteredData.length : data.length;
     const count = total - displayed < 10 ? Math.floor(total % displayed) : 10;
-    if ((data.length > 0 || filteredData.length > 0) && displayed < total) {
+    if (data.length > 0 && filteredData.length > 0 && displayed < total) {
       return (
         <button
           className="block mx-auto mt-16 border-2 p-2 rounded-lg"
