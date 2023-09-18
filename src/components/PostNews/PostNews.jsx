@@ -63,7 +63,7 @@ const PostNews = ({ title, content, image }) => {
         alt=""
       />
       <div className="flex items-end absolute top-[120px] left-0 w-full pl-5 h-[280px] bg-gradient-to-t from-[#fff] from-5% to-transparent">
-        <h2 className="mb-4 max-w-[80%] font-bold text-xl md:text-3xl">
+        <h2 className="mb-4 max-w-[80%] font-bold text-3xl [text-wrap:balance]">
           {title}
         </h2>
       </div>

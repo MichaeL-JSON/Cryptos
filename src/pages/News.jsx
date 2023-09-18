@@ -3,24 +3,93 @@ import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 
 import { news } from "../data/news";
 import PostNews from "../components/PostNews/PostNews";
+import { useDebounce } from "../hooks/useDebounce";
 
 const News = () => {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [displayed, setDisplayed] = useState(10);
+  const [term, setTerm] = useState("");
+  const debounceSearch = useDebounce(term, 600);
 
   const showMore = () => {
     setDisplayed(prev => prev + 10);
   };
 
+  const handleSearch = e => {
+    setDisplayed(10);
+    setTerm(e.target.value);
+  };
+
+  const getSearchNews = value => {
+    try {
+      const filtered = data.filter(item => {
+        return item.title.toLowerCase().includes(value.toLowerCase());
+      });
+      setFilteredData(filtered);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getContent = data => {
+    return data.slice(0, displayed).map(item => {
+      return (
+        <PostNews
+          key={item.title + item.date}
+          title={item.title}
+          content={item.content}
+          image={item.image}
+        />
+      );
+    });
+  };
+
+  const renderButton = () => {
+    const total = filteredData.length > 0 ? filteredData.length : data.length;
+    const count = total - displayed < 10 ? Math.floor(total % displayed) : 10;
+    if ((data.length > 0 || filteredData.length > 0) && displayed < total) {
+      return (
+        <button
+          className="block mx-auto mt-16 border-2 p-2 rounded-lg"
+          onClick={showMore}
+        >
+          Добавить ещё {count} новостей
+        </button>
+      );
+    }
+  };
+
+  const msgNotSearchData =
+    filteredData.length === 0 && debounceSearch ? (
+      <div className="flex justify-center mt-14">Not Search Data</div>
+    ) : null;
+
   useEffect(() => {
     const getData = () => {
       setTimeout(() => {
+        setIsLoading(false);
         setData(news.content);
       }, 3000);
     };
     getData();
-    // console.log(news.content);
+    console.log("useEffect#1");
   }, []);
+
+  useEffect(() => {
+    if (debounceSearch) {
+      setIsLoading(true);
+      setTimeout(() => {
+        getSearchNews(debounceSearch);
+      }, 1500);
+      console.log("useEffect#2");
+    } else {
+      setFilteredData([]);
+    }
+  }, [debounceSearch]);
 
   return (
     <LayoutBorderRadius>
@@ -28,10 +97,12 @@ const News = () => {
         <div className="relative w-full rounded-md shadow-md">
           <input
             type="text"
-            name="price"
-            id="price"
+            name="search"
+            id="search"
             className="block w-full rounded-md border-0 py-2.5 pl-3 pr-20 text-gray-900 font-medium ring-1 ring-inset ring-gray-300 tracking-widest placeholder:text-gray-400 focus:outline-0 sm:text-sm sm:leading-6"
-            placeholder="vol"
+            placeholder="Search..."
+            value={term}
+            onChange={handleSearch}
           />
           <div className="absolute inset-y-0 right-5 flex items-center">
             <select
@@ -112,33 +183,21 @@ const News = () => {
           </svg>
         </div> */}
       </div>
-      <div>
-        {data.length > 0 ? (
-          data
-            .slice(0, displayed)
-            .map(item => (
-              <PostNews
-                key={item.title + item.date}
-                title={item.title}
-                content={item.content}
-                image={item.image}
-              />
-            ))
+      <>
+        {!isLoading ? (
+          <>
+            <div>
+              {term !== "" ? getContent(filteredData) : getContent(data)}
+              {msgNotSearchData}
+            </div>
+            {renderButton()}
+          </>
         ) : (
-          <div className="flex justify-center items-center py-16">
+          <div className="flex mt-14 justify-center font-medium tracking-widest text-2xl">
             Loading...
           </div>
         )}
-      </div>
-      {(data.length > 0 && data.length === displayed) ||
-        (data.length > 0 && (
-          <button
-            className="block mx-auto mt-16 border-2 p-2 rounded-lg"
-            onClick={showMore}
-          >
-            Добавить ещё 10 новостей
-          </button>
-        ))}
+      </>
     </LayoutBorderRadius>
   );
 };
