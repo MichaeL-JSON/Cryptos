@@ -1,7 +1,10 @@
 import React from "react";
 // import { useGetCoinChartQuery } from "../redux";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
-import { FormContainerConverter } from "../components/converter";
+import {
+  CryptoListConverter,
+  FormContainerConverter
+} from "../components/converter";
 
 const Converter = () => {
   // для теста вытащим data здесь
@@ -39,9 +42,10 @@ const Converter = () => {
             show all
           </div>
         </div>
-        <div className="mt-6">
+        <div className="mt-6 h-full">
           <FormContainerConverter />
         </div>
+        <CryptoListConverter className={"mt-4"} />
       </LayoutBorderRadius>
     </div>
   );
