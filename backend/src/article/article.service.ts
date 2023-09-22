@@ -25,6 +25,16 @@ export class ArticleService {
 
   async storeArticles() {
     const { content } = await this.getArticles()
-    await this.articleRepository.save(content)
+    if (!content) {
+      return
+    }
+    // await this.articleRepository.save(content)
+    await this.articleRepository
+      .createQueryBuilder()
+      .insert()
+      .into(ArticleEntity)
+      .values(content)
+      .orIgnore()
+      .execute()
   }
 }
