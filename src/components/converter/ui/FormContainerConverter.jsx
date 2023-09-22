@@ -6,11 +6,11 @@ export const FormContainerConverter = () => {
     <div className="text-[0.6rem] sm:text-[0.8rem] md:text-[1rem] sm:flex w-full sm:h-[6.3rem] md:h-[7.3rem] justify-between sm:border-[0.13rem] sm:border-b-[0px] border-zinc-200 rounded-[1.3rem]">
       <FormConverter>From</FormConverter>
       <div className="z-10 bg-white relative sm:w-[16%] sm:h-[60%] sm:m-[0px_-0.13rem]">
-        <div className="sm:absolute flex items-center justify-center top-[40%] w-full h-full sm:border-[0.13rem] sm:border-b-[0px] border-zinc-200 rounded-[1.3rem] rounded-b-none">
+        <div className="sm:absolute flex items-center justify-center top-[40%] w-full h-full sm:border-[0.13rem] sm:border-b-[0px] border-zinc-200 rounded-[1.3rem] rounded-b-none m-[1rem_0rem] sm:m-0">
           <button>
             <svg
               fill="#8c8c8c"
-              className="cursor-pointer active:scale-95 sm:absolute top-[1rem] left-[35%] w-[3rem] h-[3rem] mb-[-1rem] sm:m-0 sm:w-[2.5rem] sm:h-[2.5rem] md:w-[3rem] md:h-[3rem] transition-all"
+              className="cursor-pointer active:scale-95 sm:absolute top-[1rem] left-[35%] w-[3rem] h-[3rem] sm:w-[2.5rem] sm:h-[2.5rem] md:w-[3rem] md:h-[3rem] transition-all"
               viewBox="0 0 24.00 24.00"
               xmlns="http://www.w3.org/2000/svg"
               stroke="#8c8c8c"
