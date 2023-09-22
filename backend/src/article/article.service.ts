@@ -16,10 +16,8 @@ export class ArticleService {
     const url =
       this.configService.getOrThrow('API_URL') +
       this.configService.getOrThrow('API_KEY')
-    console.log(url)
     const res = await fetch(url)
     const json = await res.json()
-    console.log(json)
     return json
   }
 
@@ -36,5 +34,7 @@ export class ArticleService {
       .values(content)
       .orIgnore()
       .execute()
+
+    console.log('Store articles')
   }
 }
