@@ -20,5 +20,11 @@ export class ArticleService {
     const res = await fetch(url)
     const json = await res.json()
     console.log(json)
+    return json
+  }
+
+  async storeArticles() {
+    const { content } = await this.getArticles()
+    await this.articleRepository.save(content)
   }
 }

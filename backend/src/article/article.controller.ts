@@ -7,6 +7,6 @@ export class ArticleController {
 
   @Get('articles')
   async getArticles() {
-    this.articleService.getArticles()
+    this.articleService.storeArticles()
   }
 }
