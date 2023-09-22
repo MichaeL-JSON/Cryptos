@@ -21,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs",
     "mg:create": "typeorm migration:create ./migrations/migration",
-    "typeorm_ts": "npx typeorm-ts-node-commonjs  -d ./src/configs/postgres.config.ts",
+    "typeorm_ts": "npx typeorm-ts-node-commonjs  -d ./src/configs/datasource.postgres.config.ts",
     "mg:generate": "npm run typeorm_ts -- migration:generate ./migrations/migration",
     "mg:run": "npm run typeorm_ts -- migration:run",
     "mg:revert": "npm run typeorm_ts -- migration:revert"
@@ -34,6 +34,7 @@
     "@nestjs/schedule": "^3.0.3",
     "@nestjs/typeorm": "^10.0.0",
     "module-alias": "^2.2.3",
+    "node-fetch": "^3.3.2",
     "nodemon": "^3.0.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
