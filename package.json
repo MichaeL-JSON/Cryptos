@@ -32,7 +32,8 @@
     "format:check": "prettier --check ./src/**/*.{js,jsx,ts,tsx}",
     "eject": "react-scripts eject",
     "pre-commit": "lint-staged",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "back": "npm run dev --prefix .\\backend\\"
   },
   "eslintConfig": {
     "extends": [
