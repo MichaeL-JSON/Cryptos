@@ -32,5 +32,6 @@ export const coinApi = createApi({
 export const {
   useGetCoinByIdQuery,
   useGetCoinChartQuery,
+  useLazyGetCoinChartQuery,
   useGetCoinsDataQuery
 } = coinApi;
