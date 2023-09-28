@@ -8,6 +8,8 @@ COPY package* ./
 
 RUN npm install
 
+RUN npm install -g concurrently
+
 COPY . ./
 
-CMD ["/bin/sh", "entrypoint.sh"]
+CMD ["concurrently", "npm:mg:run", "npm:dev"]
