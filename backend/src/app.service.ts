@@ -3,6 +3,6 @@ import { Injectable } from '@nestjs/common'
 @Injectable()
 export class AppService {
   getHello(): string {
-    return 'Hello! It's a Cryptos Project API!'
+    return "Hello! It's a Cryptos Project API!"
   }
 }

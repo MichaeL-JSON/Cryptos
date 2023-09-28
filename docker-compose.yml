@@ -23,6 +23,11 @@ services:
       - /app/node_modules
     depends_on:
       - postgres_server
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8888:8080'
 
 
 
