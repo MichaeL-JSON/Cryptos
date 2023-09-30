@@ -22,13 +22,16 @@ export const coinApi = createApi({
     }),
     getCoinsData: build.query({
       query: page =>
-        `markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=${page}&sparkline=false&locale=en`
+        `markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=${
+          page ? page : "1"
+        }&sparkline=false&locale=en`
     })
   })
 });
 
 export const {
   useGetCoinByIdQuery,
-  useGetCoinChartQuery
-  // useGetCoinsDataQuery
+  useGetCoinChartQuery,
+  useLazyGetCoinChartQuery,
+  useGetCoinsDataQuery
 } = coinApi;
