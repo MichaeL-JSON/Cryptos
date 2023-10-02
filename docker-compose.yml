@@ -18,6 +18,8 @@ services:
       - '5000:5000'
     env_file:
       - ./backend/.env
+    environment:
+      DB_HOST: postgres_server
     volumes:
       - ./backend:/app
       - /app/node_modules

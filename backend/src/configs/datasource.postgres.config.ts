@@ -7,7 +7,7 @@ config()
 
 export const configOptions: PostgresConnectionOptions = {
   type: 'postgres',
-  host: 'postgres_server',
+  host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT),
   database: process.env.POSTGRES_DB,
   username: process.env.POSTGRES_USER,
