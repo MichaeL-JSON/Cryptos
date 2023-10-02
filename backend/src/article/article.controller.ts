@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Param } from '@nestjs/common'
 import { ArticleService } from '@app/article/article.service'
 import { ArticleEntity } from '@app/article/entities/article.entity'
 
@@ -14,5 +14,10 @@ export class ArticleController {
   @Get('/articles')
   async findAll(): Promise<ArticleEntity[]> {
     return await this.articleService.findAll()
+  }
+
+  @Get('/articles/:id')
+  async getOne(@Param('id') id: number): Promise<ArticleEntity> {
+    return this.articleService.getOne(id)
   }
 }

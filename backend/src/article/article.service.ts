@@ -17,8 +17,7 @@ export class ArticleService {
       this.configService.getOrThrow('API_URL') +
       this.configService.getOrThrow('API_KEY')
     const res = await fetch(url)
-    const json = await res.json()
-    return json
+    return await res.json()
   }
 
   async saveArticlesToDb() {
@@ -40,5 +39,11 @@ export class ArticleService {
 
   async findAll(): Promise<ArticleEntity[]> {
     return await this.articleRepository.find()
+  }
+
+  async getOne(id: number): Promise<ArticleEntity> {
+    return this.articleRepository.findOne({
+      where: { id },
+    })
   }
 }
