@@ -4,6 +4,9 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { Repository } from 'typeorm'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { USER_REPOSITORY } from '@app/constants/constants'
+import { sign } from 'jsonwebtoken'
+import { JWT_SECRET } from '@app/configs/JWT.config'
+import { UserType } from '@app/user/types/user.type'
 
 @Injectable()
 export class UserService {
@@ -32,5 +35,13 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`
+  }
+
+  generateJwt(user: UserEntity): string {
+    return sign({ ...user }, JWT_SECRET)
+  }
+
+  buildUserResponse(user: UserEntity): UserType & { token: string } {
+    return { ...user, token: this.generateJwt(user) }
   }
 }
