@@ -1,13 +1,17 @@
 import React from "react";
 import { FormConverter } from "./FormConverter";
+import { reverseValue } from "../slice/converter.api";
+import { useDispatch } from "react-redux";
 
 export const FormContainerConverter = () => {
+  const dispatch = useDispatch();
+
   return (
     <div className="text-[0.6rem] sm:text-[0.8rem] md:text-[1rem] sm:flex w-full sm:h-[6.3rem] md:h-[7.3rem] justify-between sm:border-[0.13rem] sm:border-b-[0px] border-zinc-200 rounded-[1.3rem]">
       <FormConverter converterKey={"from"} />
       <div className="z-10 bg-white relative sm:w-[16%] sm:h-[60%] sm:m-[0px_-0.13rem]">
         <div className="sm:absolute flex items-center justify-center top-[40%] w-full h-full sm:border-[0.13rem] sm:border-b-[0px] border-zinc-200 rounded-[1.3rem] rounded-b-none m-[1rem_0rem] sm:m-0">
-          <button>
+          <button onClick={() => dispatch(reverseValue())}>
             <svg
               fill="#8c8c8c"
               className="cursor-pointer text-center active:scale-95 sm:mb-[-1em] h-[4em] sm:h-[3em] transition-all"
