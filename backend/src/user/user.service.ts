@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { Repository } from 'typeorm'
@@ -6,7 +6,7 @@ import { UserEntity } from '@app/user/entities/user.entity'
 import { USER_REPOSITORY } from '@app/constants/constants'
 import { sign } from 'jsonwebtoken'
 import { JWT_SECRET } from '@app/configs/JWT.config'
-import { UserType } from '@app/user/types/user.type'
+import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 
 @Injectable()
 export class UserService {
@@ -16,6 +16,21 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const userByEmail = await this.userRepository.findBy({
+      email: createUserDto.email,
+    })
+
+    const userByUserName = await this.userRepository.findBy({
+      username: createUserDto.username,
+    })
+
+    if (userByEmail.length || userByUserName.length) {
+      throw new HttpException(
+        'Email address or username is already taken!',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      )
+    }
+
     const newUser = this.userRepository.create(createUserDto)
     return await this.userRepository.save(newUser)
   }
@@ -41,7 +56,7 @@ export class UserService {
     return sign({ ...user }, JWT_SECRET)
   }
 
-  buildUserResponse(user: UserEntity): UserType & { token: string } {
-    return { ...user, token: this.generateJwt(user) }
+  buildUserResponse(user: UserEntity): UserResponseInterface {
+    return { user: { ...user, token: this.generateJwt(user) } }
   }
 }
