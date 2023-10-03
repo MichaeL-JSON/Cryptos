@@ -12,17 +12,16 @@ export class ArticleService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getArticles() {
+  async fetchArticles() {
     const url =
       this.configService.getOrThrow('API_URL') +
       this.configService.getOrThrow('API_KEY')
     const res = await fetch(url)
-    const json = await res.json()
-    return json
+    return await res.json()
   }
 
-  async storeArticles() {
-    const { content } = await this.getArticles()
+  async saveArticlesToDb() {
+    const { content } = await this.fetchArticles()
     if (!content) {
       return
     }
@@ -36,5 +35,15 @@ export class ArticleService {
       .execute()
 
     console.log('Store articles')
+  }
+
+  async findAll(): Promise<ArticleEntity[]> {
+    return await this.articleRepository.find()
+  }
+
+  async getOne(id: number): Promise<ArticleEntity> {
+    return this.articleRepository.findOne({
+      where: { id },
+    })
   }
 }

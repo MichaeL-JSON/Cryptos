@@ -6,9 +6,9 @@ import { ArticleService } from '@app/article/article.service'
 export class CronService {
   constructor(private readonly articleService: ArticleService) {}
 
-  @Cron('* 5 * * * *')
+  @Cron('0 5 * * * *')
   synchronizeArticles() {
     console.log('sync')
-    this.articleService.storeArticles()
+    this.articleService.saveArticlesToDb()
   }
 }
