@@ -14,10 +14,6 @@ import {
 
 import "../styles/index.css";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export const SelectConverter = ({ converterKey }) => {
   const { data } = useGetCoinsDataQuery();
   const [getCoinChart, { data: coinData }] = useLazyGetCoinChartQuery();
@@ -97,7 +93,7 @@ export const SelectConverter = ({ converterKey }) => {
                         }
                         value={dataItem.id}
                       >
-                        {({ selected, active }) => (
+                        {() => (
                           <div
                             onClick={() => clickHandle(dataItem)}
                             className={"flex items-center"}
@@ -108,13 +104,12 @@ export const SelectConverter = ({ converterKey }) => {
                               className="w-6 h-6 sm:w-4 sm:h-4 md:h-5 md:w-5 flex-shrink-0 rounded-full"
                             />
                             <span
-                              className={classNames(
-                                selected
-                                  ? "font-semibold text-indigo-600"
-                                  : "font-normal",
-                                active ? " text-yellow-600" : "",
-                                "ml-3 sm:ml-1 md:ml-3 block transition-all"
-                              )}
+                              className={
+                                "font-semibold hover:text-indigo-600 ml-3 sm:ml-1 md:ml-3 block transition-all " +
+                                (dataItem.symbol === currency
+                                  ? "hover:text-yellow-600 text-yellow-600"
+                                  : "")
+                              }
                             >
                               {dataItem.symbol.toUpperCase()}
                             </span>

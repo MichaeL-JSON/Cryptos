@@ -15,6 +15,15 @@ export const InputConverter = ({ converterKey }) => {
       !isNaN(sanitizedValue) ||
       sanitizedValue === ""
     ) {
+      if (
+        sanitizedValue.length === 2 &&
+        sanitizedValue[0] === "0" &&
+        sanitizedValue[1] !== "."
+      ) {
+        dispatch(updateValue({ key: converterKey, value: sanitizedValue[1] }));
+        return;
+      }
+
       dispatch(updateValue({ key: converterKey, value: sanitizedValue }));
     }
   };
@@ -36,7 +45,7 @@ export const InputConverter = ({ converterKey }) => {
           placeholder="0.00"
           onChange={inputChangeHandle}
           onKeyUp={keyUpHandle}
-          value={converterState.value == 0 ? 0 : converterState.value}
+          value={converterState.value}
         />
       </div>
     </div>
