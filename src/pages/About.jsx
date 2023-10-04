@@ -1,4 +1,3 @@
-import React from "react";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 import ReactApexChart from "react-apexcharts";
 

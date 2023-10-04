@@ -1,4 +1,3 @@
-import React from "react";
 // import { useGetCoinChartQuery } from "../redux";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 import {

@@ -1,4 +1,3 @@
-import React from "react";
 import { cryptoList } from "../const";
 
 const formatNumberWithSpaces = number =>
