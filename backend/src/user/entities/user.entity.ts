@@ -9,10 +9,11 @@ export class UserEntity {
   @Column()
   username: string
 
-  @Column()
+  @Column({ unique: true })
   email: string
 
-  @Column()
+  //select:false предотвращает получение пароля из БД путём find || findOne|| findBy
+  @Column({ select: false })
   password: string
 
   @Column({ default: '' })

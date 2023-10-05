@@ -7,6 +7,8 @@ import { USER_REPOSITORY } from '@app/constants/constants'
 import { sign } from 'jsonwebtoken'
 import { JWT_SECRET } from '@app/configs/JWT.config'
 import { UserResponseInterface } from '@app/user/types/userResponse.interface'
+import { LoginUserDto } from '@app/user/dto/login-user.dto'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -33,6 +35,33 @@ export class UserService {
 
     const newUser = this.userRepository.create(createUserDto)
     return await this.userRepository.save(newUser)
+  }
+
+  async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    const dbUser: UserEntity = await this.userRepository.findOne({
+      select: ['id', 'username', 'email', 'password', 'avatar'],
+      where: {
+        email: loginUserDto.email,
+      },
+    })
+
+    if (!dbUser) {
+      throw new HttpException(
+        'There is no user with this email address in the database!',
+        HttpStatus.UNAUTHORIZED,
+      )
+    }
+
+    if (!(await bcrypt.compare(loginUserDto.password, dbUser.password))) {
+      throw new HttpException(
+        'Incorrect password entered!',
+        HttpStatus.UNAUTHORIZED,
+      )
+    }
+
+    //Удаляем свойство password из объекта, содержащего данные пользователя
+    delete dbUser.password
+    return dbUser
   }
 
   findAll() {
