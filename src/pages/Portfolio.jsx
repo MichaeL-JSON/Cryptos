@@ -1,4 +1,3 @@
-import React from "react";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 import PortfolioList from "../components/portfolio/PortfolioList";
 import Charts from "../components/portfolio/Charts";

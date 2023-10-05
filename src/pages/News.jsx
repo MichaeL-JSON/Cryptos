@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 
 import { news } from "../data/news";
