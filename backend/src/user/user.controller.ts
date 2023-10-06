@@ -1,4 +1,5 @@
 import {
+  Headers,
   Body,
   Controller,
   Delete,
@@ -14,6 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
+import { Request } from 'express'
 
 @Controller()
 export class UserController {
@@ -35,6 +37,14 @@ export class UserController {
   ): Promise<UserResponseInterface> {
     const dbUser = await this.userService.login(loginUserDto)
     return this.userService.buildUserResponse(dbUser)
+  }
+
+  @Get('user')
+  async getCurrentUser(
+    @Headers('Authorization') request: Request,
+  ): Promise<UserResponseInterface> {
+    console.log(request)
+    return 'currentUser' as any
   }
 
   @Get()
