@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { Repository } from 'typeorm'
@@ -45,18 +51,11 @@ export class UserService {
       },
     })
 
-    if (!dbUser) {
-      throw new HttpException(
-        'There is no user with this email address in the database!',
-        HttpStatus.UNAUTHORIZED,
-      )
-    }
-
-    if (!(await bcrypt.compare(loginUserDto.password, dbUser.password))) {
-      throw new HttpException(
-        'Incorrect password entered!',
-        HttpStatus.UNAUTHORIZED,
-      )
+    if (
+      !dbUser ||
+      !(await bcrypt.compare(loginUserDto.password, dbUser.password))
+    ) {
+      throw new UnauthorizedException()
     }
 
     //Удаляем свойство password из объекта, содержащего данные пользователя

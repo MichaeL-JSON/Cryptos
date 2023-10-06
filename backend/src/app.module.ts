@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { DatabaseModule } from './database/database.module'
 import { ConfigModule } from '@nestjs/config'
 import { ArticleModule } from './article/article.module'
 import { UserModule } from '@app/user/user.module'
+import { AuthMiddleware } from '@app/user/middlewares/auth.middleware'
 
 @Module({
   imports: [
@@ -16,4 +17,12 @@ import { UserModule } from '@app/user/user.module'
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes({
+      //Обрабатывает все маршруты и HTTP-глаголы
+      path: '*',
+      method: RequestMethod.ALL,
+    })
+  }
+}
