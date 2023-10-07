@@ -87,4 +87,12 @@ export class UserService {
   buildUserResponse(user: UserEntity): UserResponseInterface {
     return { user: { ...user, token: this.generateJwt(user) } }
   }
+
+  findOneById(id: number): Promise<UserEntity> {
+    return this.userRepository.findOne({
+      where: {
+        id,
+      },
+    })
+  }
 }
