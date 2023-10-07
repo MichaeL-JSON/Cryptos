@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import parse, { domToReact } from "html-react-parser";
 
 const PostNews = ({ title, content, image }) => {

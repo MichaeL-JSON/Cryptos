@@ -1,3 +1,5 @@
+import React from "react";
+
 const Content = () => {
   return (
     <div className="mt-[60px] w-[341px] h-[241px] rounded-[13px] bg-[#d9d9d9] bg-opacity-20">
