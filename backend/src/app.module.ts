@@ -20,7 +20,7 @@ import { AuthMiddleware } from '@app/user/middlewares/auth.middleware'
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes({
-      //Обрабатывает все маршруты и HTTP-глаголы
+      //Обрабатывает все маршруты и HTTP-глаголы. Можно передать контроллер.
       path: '*',
       method: RequestMethod.ALL,
     })

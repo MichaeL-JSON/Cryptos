@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import parse, { domToReact } from "html-react-parser";
 
 const PostNews = ({ title, content, image }) => {
@@ -27,7 +27,7 @@ const PostNews = ({ title, content, image }) => {
     }
   };
 
-  const toggleExpand = () => {
+  const toggleExpand = useCallback(() => {
     const div = contentRef.current;
     const paragraphs = div.querySelectorAll("p");
     const originalText = paragraphs[0].textContent;
@@ -47,11 +47,11 @@ const PostNews = ({ title, content, image }) => {
     }
 
     setExpanded(prev => !prev);
-  };
+  }, [expanded]);
 
   useEffect(() => {
     toggleExpand();
-  }, []);
+  }, [toggleExpand]);
 
   return (
     <div
