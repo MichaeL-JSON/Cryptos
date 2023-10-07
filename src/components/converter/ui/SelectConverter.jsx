@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,7 +38,7 @@ export const SelectConverter = ({ converterKey }) => {
       id: "bitcoin",
       currency: "usd"
     });
-  }, []);
+  }, [getCoinChart]);
 
   useEffect(() => {
     if (coinData) {
@@ -47,7 +47,7 @@ export const SelectConverter = ({ converterKey }) => {
       );
       dispatch(updateValue({ key: converterKey, value: converterValue }));
     }
-  }, [coinData]);
+  }, [coinData, converterKey, converterValue, dispatch]);
 
   return (
     <>
