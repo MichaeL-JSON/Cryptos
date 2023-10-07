@@ -3,9 +3,13 @@ import { NextFunction, Response } from 'express'
 import { ExpressRequestInterface } from '@app/types/expressRequest.interface'
 import { verify } from 'jsonwebtoken'
 import { JWT_SECRET } from '@app/configs/JWT.config'
+import { UserService } from '@app/user/user.service'
+import { UserType } from '@app/user/types/user.type'
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
+  constructor(private readonly userService: UserService) {}
+
   async use(req: ExpressRequestInterface, res: Response, next: NextFunction) {
     console.log('AuthMiddleware: ', req.headers)
     //Проверка наличия токена авторизации в заголовке запроса пользователя
@@ -22,8 +26,9 @@ export class AuthMiddleware implements NestMiddleware {
 
     //Декодирование JWT токена авторизации
     try {
-      const decode = verify(token, JWT_SECRET)
-      console.log('decode: ', decode)
+      const decode = verify(token, JWT_SECRET) as UserType
+      req.user = await this.userService.findOneById(decode.id)
+      console.log(req.user)
       next()
     } catch (e) {
       //При выбросе исключения "обнуляем" пользователя

@@ -1,5 +1,4 @@
 import {
-  Headers,
   Body,
   Controller,
   Delete,
@@ -7,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -15,7 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
-import { Request } from 'express'
+import { ExpressRequestInterface } from '@app/types/expressRequest.interface'
 
 @Controller()
 export class UserController {
@@ -41,10 +41,10 @@ export class UserController {
 
   @Get('user')
   async getCurrentUser(
-    @Headers('Authorization') request: Request,
+    @Req() request: ExpressRequestInterface,
   ): Promise<UserResponseInterface> {
-    console.log(request)
-    return 'currentUser' as any
+    console.log(request.user)
+    return this.userService.buildUserResponse(request.user)
   }
 
   @Get()
