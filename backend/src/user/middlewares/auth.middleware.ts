@@ -22,7 +22,6 @@ export class AuthMiddleware implements NestMiddleware {
 
     //Получение токена авторизации из заголовков запроса пользователя
     const token = req.headers.authorization.split(' ')[1]
-    console.log(token)
 
     //Декодирование JWT токена авторизации
     try {

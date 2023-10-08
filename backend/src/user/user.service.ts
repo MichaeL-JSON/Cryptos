@@ -63,6 +63,17 @@ export class UserService {
     return dbUser
   }
 
+  async updateUser(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    const user = await this.findOneById(userId)
+    Object.assign(user, updateUserDto)
+    const updatedUser = await this.userRepository.save(user)
+    delete updatedUser.password
+    return updatedUser
+  }
+
   findAll() {
     return `This action returns all user`
   }
@@ -72,7 +83,6 @@ export class UserService {
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto)
     return `This action updates a #${id} user`
   }
 
