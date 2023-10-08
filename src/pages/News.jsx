@@ -89,7 +89,7 @@ const News = () => {
     } else {
       setFilteredData([]);
     }
-  }, [debounceSearch, getSearchNews]);
+  }, [debounceSearch]);
 
   return (
     <LayoutBorderRadius>
