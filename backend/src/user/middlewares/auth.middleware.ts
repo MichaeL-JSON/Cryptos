@@ -8,10 +8,10 @@ import { UserType } from '@app/user/types/user.type'
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+  }
 
   async use(req: ExpressRequestInterface, res: Response, next: NextFunction) {
-    console.log('AuthMiddleware: ', req.headers)
     //Проверка наличия токена авторизации в заголовке запроса пользователя
     if (!req.headers.authorization) {
       req.user = null
@@ -28,7 +28,6 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       const decode = verify(token, JWT_SECRET) as UserType
       req.user = await this.userService.findOneById(decode.id)
-      console.log(req.user)
       next()
     } catch (e) {
       //При выбросе исключения "обнуляем" пользователя
