@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  Req,
+  Req, UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -18,6 +18,7 @@ import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import { ExpressRequestInterface } from '@app/types/expressRequest.interface'
 import { User } from '@app/user/decorators/user.decorator'
 import { UserEntity } from '@app/user/entities/user.entity'
+import { AuthGuard } from "@app/user/guards/auth.guard";
 
 @Controller()
 export class UserController {
@@ -42,6 +43,8 @@ export class UserController {
   }
 
   @Get('user')
+  //Для защиты маршрута от неаутентифицированных пользователей
+  @UseGuards(AuthGuard)
   async getCurrentUser(
     @User() user: UserEntity,
     @User('id') userId: number,
