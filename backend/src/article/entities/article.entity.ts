@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 /*enum Ticker {
   'NASDAQ:CSCO',
@@ -11,13 +11,29 @@ export class ArticleEntity {
   @PrimaryGeneratedColumn()
   id: number
 
+  @Column({ default: '' })
+  slug: string
+
   @Column({ unique: true })
   title: string
 
   @Column()
   date: Date
 
-  @Column()
+  //При создании записи в БД значение будет присвоено автоматически
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updatedAt: Date
+
+  @Column('simple-array', { default: [] })
+  tagList: string[]
+
+  @Column({ default: 0 })
+  favoritesCount: number
+
+  @Column({ default: '' })
   content: string
 
   @Column()
@@ -34,4 +50,10 @@ export class ArticleEntity {
 
   @Column()
   site: string
+
+  //Автоматическое заполнение поля при обновлении записи
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updatedAt = new Date()
+  }
 }
