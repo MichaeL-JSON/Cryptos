@@ -1,3 +1,4 @@
+import React from 'react'
 import { useGetCoinsDataQuery } from "../../../redux";
 
 const formatNumberWithSpaces = number =>
