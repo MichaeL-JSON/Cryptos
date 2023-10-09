@@ -10,7 +10,7 @@ import {
   updateCurrency,
   updatePrice,
   updateValue
-} from "../slice/converter.api";
+} from "../../../redux/converter.api";
 
 import "../styles/index.css";
 
@@ -47,7 +47,7 @@ export const SelectConverter = ({ converterKey }) => {
       );
       dispatch(updateValue({ key: converterKey, value: converterValue }));
     }
-  }, [coinData, converterKey, converterValue, dispatch]);
+  }, [coinData, converterKey, dispatch]);
 
   return (
     <>

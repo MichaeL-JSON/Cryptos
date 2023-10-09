@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { initialState } from "../const/initialState";
+import { initialState } from "../components/converter/const/initialState";
 
 const converterSlice = createSlice({
   name: "converterSlice",
@@ -29,9 +29,12 @@ const converterSlice = createSlice({
     },
     reverseValue: state => {
       const stateFrom = state.from;
+      const stateToValue = parseFloat(
+        ((stateFrom.value * state.to.price) / stateFrom.price).toFixed(10)
+      );
 
-      state.from = state.to;
-      state.to = stateFrom;
+      state.from = { ...state.to, value: stateFrom.value };
+      state.to = { ...stateFrom, value: stateToValue };
     }
   }
 });
