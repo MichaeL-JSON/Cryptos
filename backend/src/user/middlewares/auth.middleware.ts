@@ -8,8 +8,7 @@ import { UserType } from '@app/user/types/user.type'
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly userService: UserService) {
-  }
+  constructor(private readonly userService: UserService) {}
 
   async use(req: ExpressRequestInterface, res: Response, next: NextFunction) {
     //Проверка наличия токена авторизации в заголовке запроса пользователя

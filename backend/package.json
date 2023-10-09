@@ -24,7 +24,8 @@
     "typeorm_ts": "npx typeorm-ts-node-commonjs  -d ./src/configs/datasource.postgres.config.ts",
     "mg:generate": "npm run typeorm_ts -- migration:generate ./migrations/migration",
     "mg:run": "npm run typeorm_ts -- migration:run",
-    "mg:revert": "npm run typeorm_ts -- migration:revert"
+    "mg:revert": "npm run typeorm_ts -- migration:revert",
+    "lint:fix": "eslint ./src/**/*.{js,jsx,ts,tsx} --fix"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

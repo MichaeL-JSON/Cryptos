@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post } from '@nestjs/common'
 import { ArticleService } from '@app/article/article.service'
 import { ArticleEntity } from '@app/article/entities/article.entity'
-import { ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Articles')
 @Controller('articles')
