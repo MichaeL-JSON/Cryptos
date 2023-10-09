@@ -21,11 +21,14 @@ import { ExpressRequestInterface } from '@app/types/expressRequest.interface'
 import { User } from '@app/user/decorators/user.decorator'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { AuthGuard } from '@app/user/guards/auth.guard'
+import { ApiBody, ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
 
+@ApiTags('Users')
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBody({ type: [CreateUserDto] })
   @Post('users')
   @UsePipes(new ValidationPipe())
   async create(
@@ -35,6 +38,7 @@ export class UserController {
     return this.userService.buildUserResponse(newUser)
   }
 
+  @ApiBody({ type: [LoginUserDto] })
   @Post('users/login')
   @UsePipes(new ValidationPipe())
   async login(
@@ -54,6 +58,7 @@ export class UserController {
     return this.userService.buildUserResponse(user)
   }
 
+  @ApiBody({ type: [UpdateUserDto] })
   @Put('user')
   @UseGuards(AuthGuard)
   async updateCurrentUser(
@@ -67,21 +72,25 @@ export class UserController {
     return this.userService.buildUserResponse(updatedUser)
   }
 
+  @ApiExcludeEndpoint()
   @Get()
   findAll() {
     return this.userService.findAll()
   }
 
+  @ApiExcludeEndpoint()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id)
   }
 
+  @ApiExcludeEndpoint()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto)
   }
 
+  @ApiExcludeEndpoint()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id)
