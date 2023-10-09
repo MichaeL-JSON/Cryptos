@@ -12,4 +12,4 @@ RUN npm install -g concurrently
 
 COPY . ./
 
-CMD ["concurrently", "npm:mg:run", "npm:dev"]
+CMD ["concurrently", "npm:mg:run", "npm:build"]
