@@ -1,6 +1,6 @@
 import React from "react";
 import { FormConverter } from "./FormConverter";
-import { reverseValue } from "../slice/converter.api";
+import { reverseValue } from "../../../redux/converter.api";
 import { useDispatch } from "react-redux";
 
 export const FormContainerConverter = () => {

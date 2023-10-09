@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { coinApi } from "./coinApi";
-import { converterReducer } from "../components/converter/slice/converter.api";
+import { converterReducer } from "./converter.api";
 
 export const store = configureStore({
   reducer: {
