@@ -4,6 +4,7 @@ import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 import { news } from "../data/news";
 import PostNews from "../components/PostNews/PostNews";
 import { useDebounce } from "../hooks/useDebounce";
+import { InputNews } from "../components/news/ui/InputNews";
 
 const News = () => {
   const [data, setData] = useState([]);
@@ -94,31 +95,7 @@ const News = () => {
   return (
     <LayoutBorderRadius>
       <div className="flex justify-space-between items-center gap-4">
-        <div className="relative w-full rounded-md shadow-md">
-          <input
-            type="text"
-            name="search"
-            id="search"
-            className="block w-full rounded-md border-0 py-2.5 pl-3 pr-20 text-gray-900 font-medium ring-1 ring-inset ring-gray-300 tracking-widest placeholder:text-gray-400 focus:outline-0 sm:text-sm sm:leading-6"
-            placeholder="Search..."
-            value={term}
-            onChange={handleSearch}
-          />
-          <div className="absolute inset-y-0 right-5 flex items-center">
-            <select
-              id="currency"
-              name="currency"
-              className="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-2 text-right text-gray-500 focus:outline-0 sm:text-sm"
-            >
-              <option>by head</option>
-              <option>by content</option>
-              <option>by content content</option>
-            </select>
-          </div>
-        </div>
-        <div className="inline-flex items-center w-20 h-10 px-2 text-[#f866a3] text-md bg-[#ffffff] rounded-md shadow-md cursor-pointer">
-          show all
-        </div>
+        <InputNews value={term} setValue={handleSearch} />
         {/* <div className="w-10 h-10 mb-10 rounded-md bg-white shadow-md"> */}
         {/* //       <a
   //   href="#"
