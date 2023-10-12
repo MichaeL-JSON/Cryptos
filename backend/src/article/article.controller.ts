@@ -1,7 +1,9 @@
 import { Controller, Get, Param, Post } from '@nestjs/common'
 import { ArticleService } from '@app/article/article.service'
 import { ArticleEntity } from '@app/article/entities/article.entity'
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Articles')
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
@@ -21,6 +23,7 @@ export class ArticleController {
     return this.articleService.getOne(id)
   }
 
+  @ApiExcludeEndpoint()
   @Post()
   async create() {
     return this.articleService.createArticle()
