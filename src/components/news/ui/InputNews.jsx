@@ -84,6 +84,7 @@ export const InputNews = ({ value, setValue }) => {
       </button>
 
       <ul
+        style={{ boxShadow: "1px 1px 10px 0 rgba(91, 88, 197, 0.4)" }}
         className={
           "block sm:hidden absolute transition-all bottom-[-35px] left-[25px] z-30 bg-white shadow-md rounded-[5px] " +
           (!state.toggle
@@ -93,7 +94,13 @@ export const InputNews = ({ value, setValue }) => {
       >
         {state.searchItems.map((searchItem, index) => (
           <li
-            onClick={() => setState(prev => ({ ...prev, activeIndex: index }))}
+            onClick={() =>
+              setState(prev => ({
+                ...prev,
+                activeIndex: index,
+                toggle: index === prev.activeIndex ? !prev.toggle : prev.toggle
+              }))
+            }
             key={searchItem}
             className={`p-[0px_5px] cursor-pointer transition-all ${
               index === state.activeIndex ? "text-[#4D4ACB]" : "text-[#AFABFF]"
@@ -158,6 +165,11 @@ export const InputNews = ({ value, setValue }) => {
           type="text"
           name="search"
           id="search"
+          style={{
+            boxShadow: `0 0 2px 0 rgba(${
+              state.activeSideLeft ? "181, 177, 255" : "255, 0, 106"
+            }, 1)`
+          }}
           className={`w-full rounded-[15px_32px_32px_15px] py-2.5 pl-3 pr-14 ${
             state.activeSideLeft ? "text-[#3430C1]" : "text-[#FF63A4]"
           } font-medium border-none ring-inset ring-gray-300 tracking-widest placeholder:text-gray-400 focus:outline-0 text-sm leading-6`}
