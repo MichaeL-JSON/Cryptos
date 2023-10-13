@@ -41,12 +41,12 @@ const News = () => {
     const paragraphZero = text.match(/<p>.*?<\/p>/g);
     let preview = paragraphZero[0].split(" ").slice(0, 20).join(" ");
 
-    if (!/<a\s[^>]*?>.*?<\/a>/.test(preview)) {
-      preview = paragraphZero[0].split(" ").slice(0, 20).join(" ");
+    if (!/<\/a>/.test(preview)) {
+      preview = paragraphZero[0].split(" ").slice(0, 30).join(" ");
     }
 
-    if (!/<mark\s[^>]*?>.*?<\/mark>/.test(preview)) {
-      preview = paragraphZero[0].split(" ").slice(0, 20).join(" ");
+    if (!/<\/mark>/.test(preview)) {
+      preview = paragraphZero[0].split(" ").slice(0, 30).join(" ");
     }
 
     if (!/<p>[\s\S]*<\/p>$/.test(preview)) {
@@ -56,15 +56,48 @@ const News = () => {
     return preview;
   };
 
+  const wrapText = (html, searchText) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const body = doc.querySelector("body");
+
+    const textNodes = [];
+    const walk = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walk.nextNode())) {
+      textNodes.push(node);
+    }
+
+    textNodes.forEach(node => {
+      const text = node.textContent;
+      const newText = text.replace(
+        searchText,
+        "<mark className='bg-violet-300'>$&</mark>"
+      );
+
+      node.textContent = newText;
+
+      const span = document.createElement("span");
+      span.innerHTML = newText;
+
+      node.parentNode.replaceChild(span, node);
+    });
+
+    return body.innerHTML;
+  };
+
   const paintingText = useCallback(
     text => {
-      const searchRegex = new RegExp(debounceSearch, "gi");
+      const searchRegex = new RegExp(debounceSearch.trim(), "gi");
 
-      const highlighted = text.replace(searchRegex, match => {
-        return `<mark className='bg-violet-300'>${match}</mark>`;
-      });
+      if (sortValue.name === "title") {
+        return text.replace(searchRegex, match => {
+          return `<mark className='bg-violet-300'>${match}</mark>`;
+        });
+      }
 
-      return highlighted;
+      const result = wrapText(text, searchRegex);
+      return result;
     },
     [debounceSearch, sortValue]
   );
@@ -81,7 +114,11 @@ const News = () => {
           ? paintingText(item.content)
           : item.content;
 
-      const preview = createPreview(content);
+      const preview = createPreview(item.content);
+      const highlightedPreview =
+        sortValue.name === "content" && debounceSearch && posts.length > 0
+          ? paintingText(preview)
+          : preview;
 
       return (
         <PostNews
@@ -90,7 +127,7 @@ const News = () => {
           title={title}
           content={content}
           image={item.image}
-          preview={preview}
+          preview={highlightedPreview}
         />
       );
     });
@@ -113,6 +150,11 @@ const News = () => {
         </button>
       );
     }
+  };
+
+  const onHandleSelect = value => {
+    setDisplayed(10);
+    setSortValue(value);
   };
 
   const msgNotSearchData =
@@ -148,7 +190,7 @@ const News = () => {
               onChange={handleSearch}
             />
             <div className="absolute inset-y-0 right-5 flex items-center">
-              <SelectSort dataList={dataList} onChange={setSortValue} />
+              <SelectSort dataList={dataList} onChange={onHandleSelect} />
             </div>
           </div>
           <div className="basis-14 h-10 self-center">
@@ -173,7 +215,9 @@ const News = () => {
               {renderButton()}
             </>
           ) : (
-            Array.from({ length: 3 }).fill(<Skeleton />)
+            Array(3)
+              .fill(0)
+              .map((_, index) => <Skeleton key={index} />)
           )}
         </>
       </LayoutBorderRadius>
