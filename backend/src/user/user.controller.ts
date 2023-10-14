@@ -19,11 +19,15 @@ import { User } from '@app/user/decorators/user.decorator'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { AuthGuard } from '@app/user/guards/auth.guard'
 import { ApiBody, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
+import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 
 @ApiTags('Users')
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly appMailerService: AppMailerService,
+  ) {}
 
   @ApiBody({ type: [CreateUserDto] })
   @Post('users')
@@ -85,5 +89,10 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id)
+  }
+
+  @Get('user/test-mail-sending')
+  async testMailSending() {
+    await this.appMailerService.sendMail()
   }
 }

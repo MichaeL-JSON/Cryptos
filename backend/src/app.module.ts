@@ -6,7 +6,6 @@ import { ConfigModule } from '@nestjs/config'
 import { ArticleModule } from './article/article.module'
 import { UserModule } from '@app/user/user.module'
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware'
-import { AppMailerModule } from './app-mailer/app-mailer.module'
 
 @Module({
   imports: [
@@ -14,7 +13,6 @@ import { AppMailerModule } from './app-mailer/app-mailer.module'
     DatabaseModule,
     ArticleModule,
     UserModule,
-    AppMailerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
