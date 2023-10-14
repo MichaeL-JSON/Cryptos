@@ -11,4 +11,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello()
   }
+
+  @Get('test-mail-sending')
+  async sendMail(): Promise<void> {
+    await this.appService.sendMail()
+  }
 }
