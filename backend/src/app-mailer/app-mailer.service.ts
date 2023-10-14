@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
+import { RecipientType } from '@app/app-mailer/types/recipient.type'
 
 @Injectable()
 export class AppMailerService {
@@ -7,16 +8,20 @@ export class AppMailerService {
 
   async sendMail(
     message: string = 'It is fine!',
-    email: string = 'al-1980@inbox.ru',
+    recipient: RecipientType = {
+      email: 'al-1980@inbox.ru',
+      username: 'Alexey',
+    },
   ) {
     await this.mailerService.sendMail({
-      to: email,
+      to: recipient.email,
       from: 'cryptos-node-mailer@mail.ru',
       subject: 'Testing NestJS MailerModule',
       html:
-        '<h1>Test NestJS MailerModule</h1>' +
-        `<h2>${message}</h2>` +
-        `<h2>Date: ${new Date()}</h2>`,
+        `<h3>Hello, ${recipient.username}</h3>` +
+        `<p>This message was sent from NestJS Mailer. There is no need to answer it.</p>` +
+        `<p>${message}</p>` +
+        `<p>Date: ${new Date()}</p>`,
     })
   }
 }

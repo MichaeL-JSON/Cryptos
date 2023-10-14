@@ -43,7 +43,10 @@ export class UserService {
 
     const newUser = this.userRepository.create(createUserDto)
     if (newUser) {
-      await this.appMailerService.sendMail('User is registered!')
+      await this.appMailerService.sendMail(
+        `You were registered under the name ${newUser.username} on the site Cryptos!`,
+        newUser,
+      )
     }
     return await this.userRepository.save(newUser)
   }
