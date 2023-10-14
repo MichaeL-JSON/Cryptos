@@ -5,7 +5,6 @@ import { news } from "../data/news";
 import PostNews from "../components/PostNews/PostNews";
 import { useDebounce } from "../hooks/useDebounce";
 import { usePosts } from "../hooks/usePosts";
-import { DATA_SORT_LIST as dataList } from "../components/PostNews/const";
 import { useDispatch, useSelector } from "react-redux";
 import { setNews } from "../redux/news/news";
 import FloatingButton from "../components/PostNews/ui/FloatingButton";
@@ -13,11 +12,10 @@ import Skeleton from "../components/PostNews/ui/Skeleton";
 import { InputNews } from "../components/news/ui/InputNews";
 
 const News = () => {
-  const [sortValue, setSortValue] = useState(dataList[0]);
+  const [sortValue, setSortValue] = useState("title");
   const [isLoading, setIsLoading] = useState(true);
   const [displayed, setDisplayed] = useState(10);
   const [term, setTerm] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [isShowFavorites, setIsShowFavorites] = useState(false);
 
   const { news: stateNews, favorites } = useSelector(state => state.news);
@@ -26,14 +24,13 @@ const News = () => {
   const dispatch = useDispatch();
 
   const debounceSearch = useDebounce(term, 600);
-  const posts = usePosts(favoritesOrAllNews, sortValue.name, debounceSearch);
+  const posts = usePosts(favoritesOrAllNews, sortValue, debounceSearch);
 
   const showMore = () => {
     setDisplayed(prev => prev + 10);
   };
 
   const handleSearch = e => {
-    console.log(e.target.value);
     setDisplayed(10);
     setTerm(e.target.value);
   };
@@ -91,7 +88,7 @@ const News = () => {
     text => {
       const searchRegex = new RegExp(debounceSearch.trim(), "gi");
 
-      if (sortValue.name === "title") {
+      if (sortValue === "title") {
         return text.replace(searchRegex, match => {
           return `<mark className='bg-violet-300'>${match}</mark>`;
         });
@@ -106,18 +103,18 @@ const News = () => {
   const getContent = data => {
     return data.slice(0, displayed).map(item => {
       const title =
-        sortValue.name === "title" && debounceSearch && posts.length > 0
+        sortValue === "title" && debounceSearch && posts.length > 0
           ? paintingText(item.title)
           : item.title;
 
       const content =
-        sortValue.name === "content" && debounceSearch && posts.length > 0
+        sortValue === "content" && debounceSearch && posts.length > 0
           ? paintingText(item.content)
           : item.content;
 
       const preview = createPreview(item.content);
       const highlightedPreview =
-        sortValue.name === "content" && debounceSearch && posts.length > 0
+        sortValue === "content" && debounceSearch && posts.length > 0
           ? paintingText(preview)
           : preview;
 
@@ -153,7 +150,6 @@ const News = () => {
     }
   };
 
-  // eslint-disable-next-line no-unused-vars
   const onHandleSelect = value => {
     setDisplayed(10);
     setSortValue(value);
@@ -180,9 +176,12 @@ const News = () => {
   return (
     <>
       <LayoutBorderRadius>
-        <div className="flex justify-space-between items-center gap-4">
-          <InputNews value={term} setValue={handleSearch} />
-        </div>
+        <InputNews
+          value={term}
+          setValue={handleSearch}
+          setIsShowFavorites={setIsShowFavorites}
+          setSortValue={onHandleSelect}
+        />
         <>
           {!isLoading ? (
             <>
