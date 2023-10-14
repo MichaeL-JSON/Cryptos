@@ -12,6 +12,7 @@ import { setNews } from "../redux/news/news";
 import ButtonShowAllOrFavoritesNews from "../components/PostNews/ui/ButtonShowAllOrFavoritesNews";
 import FloatingButton from "../components/PostNews/ui/FloatingButton";
 import Skeleton from "../components/PostNews/ui/Skeleton";
+import { InputNews } from "../components/news/ui/InputNews";
 
 const News = () => {
   const [sortValue, setSortValue] = useState(dataList[0]);

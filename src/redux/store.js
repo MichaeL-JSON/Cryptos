@@ -12,7 +12,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import { coinApi } from "./coinApi";
 import { newsReducer } from "./news/news";
-import { converterReducer } from "../components/converter/slice/converter.api";
+import { converterReducer } from "./converter.api";
 
 const persistConfig = {
   key: "root",

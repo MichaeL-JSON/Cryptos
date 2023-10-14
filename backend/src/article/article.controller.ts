@@ -1,23 +1,31 @@
-import { Controller, Get, Param } from '@nestjs/common'
+import { Controller, Get, Param, Post } from '@nestjs/common'
 import { ArticleService } from '@app/article/article.service'
 import { ArticleEntity } from '@app/article/entities/article.entity'
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
 
-@Controller()
+@ApiTags('Articles')
+@Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
-  @Get('articles/fetch')
+  @Get('fetch')
   async saveArticlesToDb() {
-    this.articleService.saveArticlesToDb()
+    return await this.articleService.saveArticlesToDb()
   }
 
-  @Get('/articles')
+  @Get()
   async findAll(): Promise<ArticleEntity[]> {
     return await this.articleService.findAll()
   }
 
-  @Get('/articles/:id')
+  @Get('/:id')
   async getOne(@Param('id') id: number): Promise<ArticleEntity> {
     return this.articleService.getOne(id)
+  }
+
+  @ApiExcludeEndpoint()
+  @Post()
+  async create() {
+    return this.articleService.createArticle()
   }
 }

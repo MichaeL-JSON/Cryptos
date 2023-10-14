@@ -10,7 +10,7 @@ import {
   updateCurrency,
   updatePrice,
   updateValue
-} from "../slice/converter.api";
+} from "../../../redux/converter.api";
 
 import "../styles/index.css";
 
@@ -38,7 +38,7 @@ export const SelectConverter = ({ converterKey }) => {
       id: "bitcoin",
       currency: "usd"
     });
-  }, []);
+  }, [getCoinChart]);
 
   useEffect(() => {
     if (coinData) {
@@ -47,7 +47,7 @@ export const SelectConverter = ({ converterKey }) => {
       );
       dispatch(updateValue({ key: converterKey, value: converterValue }));
     }
-  }, [coinData]);
+  }, [coinData, converterKey, dispatch]);
 
   return (
     <>
