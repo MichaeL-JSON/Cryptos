@@ -12,6 +12,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import { coinApi } from "./coinApi";
 import { newsReducer } from "./news/news";
+import { converterReducer } from "./converter.api";
 
 const persistConfig = {
   key: "root",
@@ -23,7 +24,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   [coinApi.reducerPath]: coinApi.reducer,
-  news: newsReducer
+  news: newsReducer,
+  converter: converterReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

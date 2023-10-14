@@ -5,11 +5,16 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@nestjs/cli": "^10.1.18",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "apexcharts": "^3.42.0",
+    "chart.js": "^4.4.0",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.4.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.15.0",
@@ -28,7 +33,8 @@
     "format:check": "prettier --check ./src/**/*.{js,jsx,ts,tsx}",
     "eject": "react-scripts eject",
     "pre-commit": "lint-staged",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "back": "npm run dev --prefix .\\backend\\"
   },
   "eslintConfig": {
     "extends": [
@@ -49,7 +55,10 @@
     ]
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
     "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
     "html-react-parser": "^4.2.2",
     "husky": "^8.0.0",
