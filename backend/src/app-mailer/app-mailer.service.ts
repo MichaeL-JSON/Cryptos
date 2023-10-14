@@ -5,13 +5,18 @@ import { MailerService } from '@nestjs-modules/mailer'
 export class AppMailerService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendMail() {
+  async sendMail(
+    message: string = 'It is fine!',
+    email: string = 'al-1980@inbox.ru',
+  ) {
     await this.mailerService.sendMail({
-      to: 'al-1980@inbox.ru',
+      to: email,
       from: 'cryptos-node-mailer@mail.ru',
       subject: 'Testing NestJS MailerModule',
       html:
-        '<h1>Test NestJS MailerModule</h1>' + `<h2>Date: ${new Date()}</h2>`,
+        '<h1>Test NestJS MailerModule</h1>' +
+        `<h2>${message}</h2>` +
+        `<h2>Date: ${new Date()}</h2>`,
     })
   }
 }

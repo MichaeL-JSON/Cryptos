@@ -15,12 +15,14 @@ import { JWT_SECRET } from '@app/configs/JWT.config'
 import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import * as bcrypt from 'bcrypt'
+import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly appMailerService: AppMailerService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -40,6 +42,9 @@ export class UserService {
     }
 
     const newUser = this.userRepository.create(createUserDto)
+    if (newUser) {
+      await this.appMailerService.sendMail('User is registered!')
+    }
     return await this.userRepository.save(newUser)
   }
 
