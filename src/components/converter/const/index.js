@@ -1,1 +1,1 @@
-export const optionItems = ["USD", "CAD", "EUR"];
+export const currencyList = ["USD", "CAD", "EUR"];
