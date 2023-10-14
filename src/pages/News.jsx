@@ -5,17 +5,14 @@ import { news } from "../data/news";
 import PostNews from "../components/PostNews/PostNews";
 import { useDebounce } from "../hooks/useDebounce";
 import { usePosts } from "../hooks/usePosts";
-import SelectSort from "../components/PostNews/ui/SelectSort";
-import { DATA_SORT_LIST as dataList } from "../components/PostNews/const";
 import { useDispatch, useSelector } from "react-redux";
 import { setNews } from "../redux/news/news";
-import ButtonShowAllOrFavoritesNews from "../components/PostNews/ui/ButtonShowAllOrFavoritesNews";
 import FloatingButton from "../components/PostNews/ui/FloatingButton";
 import Skeleton from "../components/PostNews/ui/Skeleton";
 import { InputNews } from "../components/news/ui/InputNews";
 
 const News = () => {
-  const [sortValue, setSortValue] = useState(dataList[0]);
+  const [sortValue, setSortValue] = useState("title");
   const [isLoading, setIsLoading] = useState(true);
   const [displayed, setDisplayed] = useState(10);
   const [term, setTerm] = useState("");
@@ -27,7 +24,7 @@ const News = () => {
   const dispatch = useDispatch();
 
   const debounceSearch = useDebounce(term, 600);
-  const posts = usePosts(favoritesOrAllNews, sortValue.name, debounceSearch);
+  const posts = usePosts(favoritesOrAllNews, sortValue, debounceSearch);
 
   const showMore = () => {
     setDisplayed(prev => prev + 10);
@@ -91,7 +88,7 @@ const News = () => {
     text => {
       const searchRegex = new RegExp(debounceSearch.trim(), "gi");
 
-      if (sortValue.name === "title") {
+      if (sortValue === "title") {
         return text.replace(searchRegex, match => {
           return `<mark className='bg-violet-300'>${match}</mark>`;
         });
@@ -106,18 +103,18 @@ const News = () => {
   const getContent = data => {
     return data.slice(0, displayed).map(item => {
       const title =
-        sortValue.name === "title" && debounceSearch && posts.length > 0
+        sortValue === "title" && debounceSearch && posts.length > 0
           ? paintingText(item.title)
           : item.title;
 
       const content =
-        sortValue.name === "content" && debounceSearch && posts.length > 0
+        sortValue === "content" && debounceSearch && posts.length > 0
           ? paintingText(item.content)
           : item.content;
 
       const preview = createPreview(item.content);
       const highlightedPreview =
-        sortValue.name === "content" && debounceSearch && posts.length > 0
+        sortValue === "content" && debounceSearch && posts.length > 0
           ? paintingText(preview)
           : preview;
 
@@ -179,28 +176,12 @@ const News = () => {
   return (
     <>
       <LayoutBorderRadius>
-        <div className="flex justify-space-between items-center gap-4">
-          <div className="relative flex-grow basis-0 rounded-md shadow-md">
-            <input
-              type="text"
-              name="search"
-              id="search"
-              className="block w-full rounded-md border-0 py-2.5 pl-3 pr-20 text-[#6f6f6f] font-medium ring-1 ring-inset ring-gray-300 tracking-widest border-[#fff] placeholder:text-[#6f6f6f] focus:outline-0 focus:border-[#b5b1ff] focus:border-2 sm:text-sm sm:leading-6"
-              placeholder="Search..."
-              value={term}
-              onChange={handleSearch}
-            />
-            <div className="absolute inset-y-0 right-5 flex items-center">
-              <SelectSort dataList={dataList} onChange={onHandleSelect} />
-            </div>
-          </div>
-          <div className="basis-14 h-10 self-center">
-            <ButtonShowAllOrFavoritesNews
-              isActive={isShowFavorites}
-              onClick={setIsShowFavorites}
-            />
-          </div>
-        </div>
+        <InputNews
+          value={term}
+          setValue={handleSearch}
+          setIsShowFavorites={setIsShowFavorites}
+          setSortValue={onHandleSelect}
+        />
         <>
           {!isLoading ? (
             <>

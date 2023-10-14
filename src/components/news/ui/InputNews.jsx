@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-export const InputNews = ({ value, setValue }) => {
+export const InputNews = ({
+  value,
+  setValue,
+  setIsShowFavorites,
+  setSortValue
+}) => {
   const [state, setState] = useState({
     searchItems: ["content", "title"],
-    activeIndex: 0,
+    activeIndex: 1,
     toggle: false,
     activeSideLeft: true
   });
@@ -30,10 +35,12 @@ export const InputNews = ({ value, setValue }) => {
         ? 0
         : state.activeIndex + 1;
     setState(prev => ({ ...prev, activeIndex }));
+    setSortValue(state.searchItems[activeIndex]);
   };
 
   const clickShowAllHandle = () => {
     setState(prev => ({ ...prev, activeSideLeft: true }));
+    setIsShowFavorites(false);
   };
 
   return (
@@ -183,6 +190,7 @@ export const InputNews = ({ value, setValue }) => {
               ...prev,
               activeSideLeft: !prev.activeSideLeft
             }));
+            setIsShowFavorites(true);
           }}
           className="absolute right-[12px] top-[10px]"
         >
