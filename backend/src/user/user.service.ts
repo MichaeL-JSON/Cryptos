@@ -18,6 +18,7 @@ import * as bcrypt from 'bcrypt'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ConfigService } from '@nestjs/config'
+import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
 
 @Injectable()
 export class UserService {
@@ -140,5 +141,23 @@ export class UserService {
     const html = `<p>Please, use this  <a href="${forgotLink}">link</a> to reset your password!</p>`
 
     await this.appMailerService.sendMail(html, user)
+  }
+
+  async changePassword(
+    userId: number,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<UserEntity> {
+    const dbUser = await this.findOneById(userId)
+    if (!dbUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+    }
+
+    const hashPassword = await bcrypt.hash(changePasswordDto.password, 10)
+
+    await this.userRepository.update(userId, {
+      password: hashPassword,
+    })
+
+    return dbUser
   }
 }

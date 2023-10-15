@@ -27,6 +27,7 @@ import {
 } from '@nestjs/swagger'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
+import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
 
 @ApiTags('Users')
 @ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
@@ -141,11 +142,27 @@ export class UserController {
       },
     },
   })
-  @Post('user/forgot_password')
+  @Post('user/forgot-password')
   @UsePipes(new ValidationPipe())
   async forgotPassword(
     @Body('user') forgotPasswordDto: ForgotPasswordDto,
   ): Promise<void> {
     await this.userService.forgotPassword(forgotPasswordDto)
+  }
+
+  @ApiBody({ type: ChangePasswordDto })
+  @Put('user/change-password')
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
+  async changePassword(
+    @User() userEntity: UserEntity,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<UserResponseInterface> {
+    const updatedUser = await this.userService.changePassword(
+      userEntity.id,
+      changePasswordDto,
+    )
+
+    return this.userService.buildUserResponse(updatedUser)
   }
 }
