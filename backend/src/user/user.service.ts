@@ -16,6 +16,7 @@ import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import * as bcrypt from 'bcrypt'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
+import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 
 @Injectable()
 export class UserService {
@@ -23,18 +24,15 @@ export class UserService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
     private readonly appMailerService: AppMailerService,
-  ) {}
+  ) {
+  }
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const userByEmail = await this.userRepository.findBy({
-      email: createUserDto.email,
-    })
+    const userByEmail = this.findOneByEmail(createUserDto.email)
 
-    const userByUserName = await this.userRepository.findBy({
-      username: createUserDto.username,
-    })
+    const userByUserName = this.findOneByUserName(createUserDto.username)
 
-    if (userByEmail.length || userByUserName.length) {
+    if (userByEmail || userByUserName {
       throw new HttpException(
         'Email address or username is already taken!',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -107,6 +105,18 @@ export class UserService {
       where: {
         id,
       },
+    })
+  }
+
+  async findOneByEmail(email: string): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { email },
+    })
+  }
+
+  async findOneByUserName(username: string): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { username },
     })
   }
 }
