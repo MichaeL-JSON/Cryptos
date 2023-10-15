@@ -11,7 +11,7 @@ export class AppMailerService {
   ) {}
 
   async sendMail(
-    message: string = 'It is fine!',
+    html: string = 'It is fine!',
     recipient: RecipientType = {
       email: 'al-1980@inbox.ru',
       username: 'Alexey',
@@ -22,12 +22,12 @@ export class AppMailerService {
       // from: 'cryptos-node-mailer@mail.ru',
       from: `${this.configService.getOrThrow(
         'MAIL_USER',
-      )}@${this.configService.getOrThrow('MAIL_DOMEN')}`,
+      )}@${this.configService.getOrThrow('MAIL_HOST')}`,
       subject: 'Testing NestJS MailerModule',
       html:
         `<h3>Hello, ${recipient.username}</h3>` +
         `<p>This message was sent from NestJS Mailer. There is no need to answer it.</p>` +
-        `<p>${message}</p>` +
+        `<div>${html}</div>` +
         `<p>Date: ${new Date()}</p>`,
     })
   }

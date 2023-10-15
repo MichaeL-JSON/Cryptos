@@ -20,6 +20,7 @@ import { UserEntity } from '@app/user/entities/user.entity'
 import { AuthGuard } from '@app/user/guards/auth.guard'
 import { ApiBody, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
+import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 
 @ApiTags('Users')
 @Controller()
@@ -94,5 +95,13 @@ export class UserController {
   @Get('user/test-mail-sending')
   async testMailSending() {
     await this.appMailerService.sendMail()
+  }
+
+  @Post('user/forgot_password')
+  @UsePipes(new ValidationPipe())
+  async forgotPassword(
+    @Body('user') forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<void> {
+    await this.userService.forgotPassword(forgotPasswordDto)
   }
 }

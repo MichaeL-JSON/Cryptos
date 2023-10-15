@@ -17,6 +17,7 @@ import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import * as bcrypt from 'bcrypt'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class UserService {
@@ -24,15 +25,15 @@ export class UserService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
     private readonly appMailerService: AppMailerService,
-  ) {
-  }
+    private readonly configService: ConfigService,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const userByEmail = this.findOneByEmail(createUserDto.email)
+    const userByEmail = await this.findOneByEmail(createUserDto.email)
 
-    const userByUserName = this.findOneByUserName(createUserDto.username)
+    const userByUserName = await this.findOneByUserName(createUserDto.username)
 
-    if (userByEmail || userByUserName {
+    if (userByEmail || userByUserName) {
       throw new HttpException(
         'Email address or username is already taken!',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -118,5 +119,26 @@ export class UserService {
     return await this.userRepository.findOne({
       where: { username },
     })
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+    const user = await this.findOneByEmail(forgotPasswordDto.email)
+
+    if (!user) {
+      throw new HttpException(
+        'A user with this email address is not registered',
+        HttpStatus.NOT_FOUND,
+      )
+    }
+
+    const token = this.generateJwt(user)
+    const forgotLink = `http://${this.configService.get(
+      'API_HOST',
+    )}:${this.configService.get('API_PORT')}/${this.configService.get(
+      'API_PREFIX',
+    )}/user/forgot_password?token=${token}`
+    const html = `<p>Please, use this  <a href="${forgotLink}">link</a> to reset your password!</p>`
+
+    await this.appMailerService.sendMail(html, user)
   }
 }

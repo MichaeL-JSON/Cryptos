@@ -6,7 +6,7 @@ export const mailerModuleConnectionConfig = {
   useFactory: (configService: ConfigService) => {
     return {
       transport: {
-        host: `smtp.${configService.getOrThrow('MAIL_DOMEN')}`,
+        host: `smtp.${configService.getOrThrow('MAIL_HOST')}`,
         auth: {
           user: configService.getOrThrow('MAIL_USER'),
           //Пароль для приложения
