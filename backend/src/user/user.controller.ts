@@ -18,11 +18,18 @@ import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import { User } from '@app/user/decorators/user.decorator'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { AuthGuard } from '@app/user/guards/auth.guard'
-import { ApiBody, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
+import {
+  ApiBody,
+  ApiExcludeEndpoint,
+  ApiExtraModels,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 
 @ApiTags('Users')
+@ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
 @Controller()
 export class UserController {
   constructor(
@@ -30,7 +37,16 @@ export class UserController {
     private readonly appMailerService: AppMailerService,
   ) {}
 
-  @ApiBody({ type: [CreateUserDto] })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(CreateUserDto),
+        },
+      },
+    },
+  })
   @Post('users')
   @UsePipes(new ValidationPipe())
   async create(
@@ -40,7 +56,16 @@ export class UserController {
     return this.userService.buildUserResponse(newUser)
   }
 
-  @ApiBody({ type: [LoginUserDto] })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(LoginUserDto),
+        },
+      },
+    },
+  })
   @Post('users/login')
   @UsePipes(new ValidationPipe())
   async login(
@@ -60,7 +85,16 @@ export class UserController {
     return this.userService.buildUserResponse(user)
   }
 
-  @ApiBody({ type: [UpdateUserDto] })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(UpdateUserDto),
+        },
+      },
+    },
+  })
   @Put('user')
   @UseGuards(AuthGuard)
   async updateCurrentUser(
@@ -97,6 +131,16 @@ export class UserController {
     await this.appMailerService.sendMail()
   }
 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(ForgotPasswordDto),
+        },
+      },
+    },
+  })
   @Post('user/forgot_password')
   @UsePipes(new ValidationPipe())
   async forgotPassword(
