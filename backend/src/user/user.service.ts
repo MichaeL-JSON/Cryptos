@@ -138,9 +138,16 @@ export class UserService {
     )}:${this.configService.get('API_PORT')}/${this.configService.get(
       'API_PREFIX',
     )}/user/forgot_password?token=${token}`
-    const html = `<p>Please, use this  <a href="${forgotLink}">link</a> to reset your password!</p>`
+    const html = `<p>Please, use this  <a href='${forgotLink}'>link</a> to reset your password!</p>`
 
     await this.appMailerService.sendMail(html, user)
+  }
+
+  async setForgotPasswordToken(
+    userId: number,
+    forgotPasswordToken: string,
+  ): Promise<void> {
+    await this.userRepository.update(userId, { forgotPasswordToken })
   }
 
   async changePassword(
