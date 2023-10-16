@@ -25,6 +25,9 @@ export class UserEntity {
   @Column({ default: '' })
   avatar: string
 
+  @Column({ name: 'forgot_password_token', default: '' })
+  forgotPasswordToken: string
+
   //Срабатывает перед добавлением записи в БД
   @BeforeInsert()
   async hashPassword() {
