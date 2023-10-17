@@ -135,13 +135,11 @@ export class UserService {
 
     await this.setForgotPasswordToken(user.id, token)
 
-    const forgotLink = `http://${this.configService.get(
+    const resetPasswordLink = `http://${this.configService.get(
       'API_HOST',
-    )}:${this.configService.get('API_PORT')}/${this.configService.get(
-      'API_PREFIX',
-    )}/user/forgot_password?token=${token}`
+    )}:3000/user/reset-password?token=${token}`
 
-    const html = `<p>Please, use this  <a href='${forgotLink}'>link</a> to reset your password!</p>`
+    const html = `<p>Please, use this link to <a href='${resetPasswordLink}'>reset your password!</a></p>`
 
     await this.appMailerService.sendMail(html, user)
   }
