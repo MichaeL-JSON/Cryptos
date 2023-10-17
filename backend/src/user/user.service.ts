@@ -124,7 +124,6 @@ export class UserService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
     const user = await this.findOneByEmail(forgotPasswordDto.email)
-
     if (!user) {
       throw new HttpException(
         'A user with this email address is not registered',
@@ -133,12 +132,14 @@ export class UserService {
     }
 
     const token = this.generateJwt(user)
-    const forgotLink = `http://${this.configService.get(
+
+    await this.setForgotPasswordToken(user.id, token)
+
+    const resetPasswordLink = `http://${this.configService.get(
       'API_HOST',
-    )}:${this.configService.get('API_PORT')}/${this.configService.get(
-      'API_PREFIX',
-    )}/user/forgot_password?token=${token}`
-    const html = `<p>Please, use this  <a href='${forgotLink}'>link</a> to reset your password!</p>`
+    )}:3000/user/reset-password?token=${token}`
+
+    const html = `<p>Please, use this link to <a href='${resetPasswordLink}'>reset your password!</a></p>`
 
     await this.appMailerService.sendMail(html, user)
   }
