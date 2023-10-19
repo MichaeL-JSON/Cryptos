@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 export const InputNews = ({
   value,
@@ -13,6 +13,9 @@ export const InputNews = ({
     activeSideLeft: true
   });
 
+  const ref = useRef(null);
+  const refButton = useRef(null);
+
   useEffect(() => {
     const setToggleFalse = () => {
       setState(prev => ({ ...prev, toggle: false }));
@@ -23,6 +26,26 @@ export const InputNews = ({
       clearTimeout(setToggleFalse);
     };
   }, [state.activeIndex]);
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (window.innerWidth > 640) return;
+
+      if (ref.current && refButton.current.contains(event.target)) {
+        setState(prev => ({ ...prev, toggle: !prev.toggle }));
+        return;
+      }
+
+      if (ref.current && !ref.current.contains(event.target)) {
+        setState(prev => ({ ...prev, toggle: false }));
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const clickHandle = async () => {
     if (!state.toggle) {
@@ -70,9 +93,7 @@ export const InputNews = ({
       </button>
 
       <button
-        onClick={() => {
-          setState(prev => ({ ...prev, toggle: !prev.toggle }));
-        }}
+        ref={refButton}
         className="absolute block sm:hidden transition-all h-[88%] w-[30%] rounded-[10px] left-[3px] cursor-pointer hover:bg-[#fff] hover:bg-opacity-[0.5]"
       >
         <svg
@@ -91,9 +112,10 @@ export const InputNews = ({
       </button>
 
       <ul
+        ref={ref}
         style={{ boxShadow: "1px 1px 10px 0 rgba(91, 88, 197, 0.4)" }}
         className={
-          "block sm:hidden absolute transition-all bottom-[-35px] left-[25px] z-30 bg-white shadow-md rounded-[5px] " +
+          "block sm:hidden p-[5px] absolute transition-all bottom-[-40px] left-[25px] z-30 bg-white shadow-md rounded-[5px] " +
           (!state.toggle
             ? "translate-y-[-20px] opacity-0 z-0 pointer-events-none"
             : "")
