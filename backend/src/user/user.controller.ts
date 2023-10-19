@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -55,6 +56,12 @@ export class UserController {
   ): Promise<UserResponseInterface> {
     const newUser = await this.userService.create(createUserDto)
     return this.userService.buildUserResponse(newUser)
+  }
+
+  @Get('user/activate')
+  async activate(@Query('id') userId: number, @Query('token') token: string) {
+    if (await this.userService.activate(userId, token)) {
+    }
   }
 
   @ApiBody({
