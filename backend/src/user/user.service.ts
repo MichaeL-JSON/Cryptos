@@ -42,12 +42,20 @@ export class UserService {
     }
 
     const newUser = this.userRepository.create(createUserDto)
+
     if (newUser) {
-      await this.appMailerService.sendMail(
-        `You were registered under the name ${newUser.username} on the site Cryptos!`,
-        newUser,
-      )
+      const token = await bcrypt.hash(newUser.email, 10)
+      newUser.token = token
+      const confirmEmailLink = `http://${this.configService.get(
+        'API_HOST',
+      )}:5000/api/user/confirm-email?token=${token}`
+      const htmlMessage = `
+        <p>You were registered under the name ${newUser.username} on the site Cryptos!</p>
+        <p>Please, use this link to <a href="${confirmEmailLink}">confirm registration and activate your account!</a></p>`
+
+      await this.appMailerService.sendMail(htmlMessage, newUser)
     }
+
     return await this.userRepository.save(newUser)
   }
 
@@ -131,24 +139,21 @@ export class UserService {
       )
     }
 
-    const token = this.generateJwt(user)
+    const token = await bcrypt.hash(user.password, 10)
 
-    await this.setForgotPasswordToken(user.id, token)
+    await this.setToken(user.id, token)
 
     const resetPasswordLink = `http://${this.configService.get(
       'API_HOST',
     )}:3000/user/reset-password?token=${token}`
 
-    const html = `<p>Please, use this link to <a href='${resetPasswordLink}'>reset your password!</a></p>`
+    const htmlMessage = `<p>Please, use this link to <a href="${resetPasswordLink}">reset your password!</a></p>`
 
-    await this.appMailerService.sendMail(html, user)
+    await this.appMailerService.sendMail(htmlMessage, user)
   }
 
-  async setForgotPasswordToken(
-    userId: number,
-    forgotPasswordToken: string,
-  ): Promise<void> {
-    await this.userRepository.update(userId, { forgotPasswordToken })
+  async setToken(userId: number, token: string): Promise<void> {
+    await this.userRepository.update(userId, { token })
   }
 
   async changePassword(

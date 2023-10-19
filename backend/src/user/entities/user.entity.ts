@@ -25,8 +25,11 @@ export class UserEntity {
   @Column({ default: '' })
   avatar: string
 
-  @Column({ name: 'forgot_password_token', default: '' })
-  forgotPasswordToken: string
+  @Column({ default: false })
+  active: boolean
+
+  @Column({ default: '' })
+  token: string
 
   //Срабатывает перед добавлением записи в БД
   @BeforeInsert()
