@@ -61,14 +61,19 @@ export class UserService {
     return user
   }
 
-  async activate(userId: number, token: string): Promise<boolean> {
+  async activate(userId: number, token: string): Promise<string> {
     const user = await this.findOneById(userId)
     if (token === user.token) {
-      const updatedUser = await this.userRepository.update(userId, {
+      await this.userRepository.update(userId, {
         active: true,
+        token: '',
       })
-      console.log('updatedUser: ', updatedUser)
-      return true
+
+      const loginLink = `http://${this.configService.get(
+        'API_HOST',
+      )}:3000/portfolio`
+
+      return loginLink
     }
     throw new HttpException('Token is not valid', HttpStatus.NOT_ACCEPTABLE)
   }
@@ -183,6 +188,7 @@ export class UserService {
 
     await this.userRepository.update(userId, {
       password: hashPassword,
+      token: '',
     })
 
     return dbUser
