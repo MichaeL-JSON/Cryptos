@@ -3,11 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   Post,
   Put,
   Query,
+  Redirect,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -30,7 +30,6 @@ import {
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
-import { Redirect } from '@nestjsplus/redirect'
 
 @ApiTags('Users')
 @ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
@@ -65,10 +64,8 @@ export class UserController {
   async activate(
     @Query('id') userId: number,
     @Query('token') token: string,
-  ): Promise<{ statusCode: HttpStatus; url: string }> {
-    const loginLink = await this.userService.activate(userId, token)
-    console.log(loginLink)
-    return { statusCode: HttpStatus.ACCEPTED, url: loginLink }
+  ): Promise<{ url: string }> {
+    return { url: await this.userService.activate(userId, token) }
   }
 
   @ApiBody({

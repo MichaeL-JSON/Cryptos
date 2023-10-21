@@ -69,11 +69,7 @@ export class UserService {
         token: '',
       })
 
-      const loginLink = `http://${this.configService.get(
-        'API_HOST',
-      )}:3000/portfolio`
-
-      return loginLink
+      return `http://${this.configService.get('API_HOST')}:3000/login`
     }
     throw new HttpException('Token is not valid', HttpStatus.NOT_ACCEPTABLE)
   }
