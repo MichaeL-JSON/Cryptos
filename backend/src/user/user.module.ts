@@ -7,9 +7,9 @@ import { AuthGuard } from '@app/user/guards/auth.guard'
 import { AppMailerModule } from '@app/app-mailer/app-mailer.module'
 
 @Module({
-  imports: [DatabaseModule, AppMailerModule],
-  providers: [UserService, AuthGuard, ...userProviders],
   controllers: [UserController],
   exports: [UserService],
+  imports: [DatabaseModule, AppMailerModule],
+  providers: [UserService, AuthGuard, ...userProviders],
 })
 export class UserModule {}

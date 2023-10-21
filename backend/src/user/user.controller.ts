@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  Redirect,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -55,6 +57,15 @@ export class UserController {
   ): Promise<UserResponseInterface> {
     const newUser = await this.userService.create(createUserDto)
     return this.userService.buildUserResponse(newUser)
+  }
+
+  @Redirect()
+  @Get('user/activate')
+  async activate(
+    @Query('id') userId: number,
+    @Query('token') token: string,
+  ): Promise<{ url: string }> {
+    return { url: await this.userService.activate(userId, token) }
   }
 
   @ApiBody({
