@@ -31,6 +31,12 @@ export class UserEntity {
   @Column({ default: '' })
   token: string
 
+  @Column({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date
+
+  @Column({ name: 'updated_at', default: () => 'CURRENT_TIMESTAMP' })
+  updatedAt: Date
+
   //Срабатывает перед добавлением записи в БД
   @BeforeInsert()
   async hashPassword() {
