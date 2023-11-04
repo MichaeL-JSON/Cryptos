@@ -24,8 +24,8 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
   }, [inputRef.current]);
 
   const onChangeHandle = event => {
-    const value = Number(event.target.value);
-    if (value >= 0 && value < 99999) {
+    const value = event.target.value === "" ? "" : Number(event.target.value);
+    if ((value >= 0 && value < 99999) || value === "") {
       if (value === 0) {
         setInputValue(1);
         return;
@@ -38,6 +38,14 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
     if (container.current && !container.current.contains(e.target)) {
       setShowComponent(false);
     }
+  };
+
+  const showInputHandle = value => {
+    if (!value && inputValue === "") {
+      setInputValue(1);
+    }
+
+    setShowInput(value);
   };
 
   return (
@@ -62,7 +70,7 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
             >
               <img
                 src={image}
-                style={{ boxShadow: "0px 0px 7px 0px rgb(247, 147, 26)" }}
+                style={{ boxShadow: "0px 0px 5px 0px rgb(255, 240, 229)" }}
                 className="w-[25px] h-[25px] sm:w-[35px] sm:h-[35px] md:w-[55px] md:h-[55px] rounded-full"
               />
               <p className="text-[21px] sm:text-[30px] md:text-[41px] text-[#4D4AC8] font-medium m-[0px_0px_0px_6px] sm:m-[0px_0px_0px_11px] md:m-[0px_22px]">
@@ -119,12 +127,12 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
                         className="w-[70px] h-[33px] sm:h-[48px] sm:w-[95px] mr-[5px] rounded-lg p-[0px_2px] border-[1px] border-black border-opacity-60 bg-[#D4D2FF] cursor-pointer focus:cursor-text transition-all outline-none"
                         value={inputValue}
                         onChange={onChangeHandle}
-                        onBlur={() => setShowInput(false)}
+                        onBlur={() => showInputHandle(false)}
                       />
                     ) : (
                       <div
                         className="cursor-pointer p-[1px_0px] border-[1px] border-transparent h-[33px] sm:h-[48px]"
-                        onClick={() => setShowInput(true)}
+                        onClick={() => showInputHandle(true)}
                       >
                         {inputValue}
                       </div>
@@ -159,7 +167,10 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
                   style={{ boxShadow: "0px 0px 4px 0px rgb(212, 210, 255)" }}
                   className="text-[#3F3F3F] text-[21px] sm:text-[31px] font-bold w-full h-[38px] sm:h-[54px] bg-white rounded-[5px] flex items-center justify-center"
                 >
-                  {formatNumber(Number(inputValue) * price)}$
+                  {formatNumber(
+                    Number(inputValue === "" ? 1 : inputValue) * price
+                  )}
+                  $
                 </div>
               </div>
 
