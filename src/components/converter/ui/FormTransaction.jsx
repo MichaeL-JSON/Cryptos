@@ -14,13 +14,12 @@ function formatNumber(number) {
 
 export const FormTransaction = ({ image, name, price, setShowComponent }) => {
   const [inputValue, setInputValue] = useState(1);
-  const [showInput, setShowInput] = useState(false);
 
   const inputRef = useRef(null);
   const container = useRef(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    inputRef.current?.focus?.();
   }, [inputRef.current]);
 
   const onChangeHandle = event => {
@@ -38,14 +37,6 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
     if (container.current && !container.current.contains(e.target)) {
       setShowComponent(false);
     }
-  };
-
-  const showInputHandle = value => {
-    if (!value && inputValue === "") {
-      setInputValue(1);
-    }
-
-    setShowInput(value);
   };
 
   return (
@@ -121,22 +112,18 @@ export const FormTransaction = ({ image, name, price, setShowComponent }) => {
 
                 <div className="flex justify-center text-[#3F3F3F] text-[21px] sm:text-[31px] font-bold items-center mb-[10px] sm:mb-[33px]">
                   <div className="flex items-end">
-                    {showInput ? (
-                      <input
-                        ref={inputRef}
-                        className="w-[70px] h-[33px] sm:h-[48px] sm:w-[95px] mr-[5px] rounded-lg p-[0px_2px] border-[1px] border-black border-opacity-60 bg-[#D4D2FF] cursor-pointer focus:cursor-text transition-all outline-none"
-                        value={inputValue}
-                        onChange={onChangeHandle}
-                        onBlur={() => showInputHandle(false)}
-                      />
-                    ) : (
-                      <div
-                        className="cursor-pointer p-[1px_0px] border-[1px] border-transparent h-[33px] sm:h-[48px]"
-                        onClick={() => showInputHandle(true)}
-                      >
-                        {inputValue}
-                      </div>
-                    )}
+                    <input
+                      ref={inputRef}
+                      style={{ caretWidth: "10px" }}
+                      className={`w-[${`${
+                        13 * (inputValue.length || 1)
+                      }`}px] sm:w-[${`${
+                        19 * (inputValue.length || 1)
+                      }`}px] h-[33px] sm:h-[48px] sm:mr-[5px] rounded-lg border-[1px] border-transparent bg-transparent cursor-pointer focus:cursor-text outline-none overflow-auto text-center`}
+                      value={inputValue}
+                      onChange={onChangeHandle}
+                      onBlur={() => inputRef.current?.focus?.()}
+                    />
                     <span className="text-[#828282] text-[11px] mb-[5px]">
                       coin
                     </span>
