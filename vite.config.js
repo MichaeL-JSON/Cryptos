@@ -8,6 +8,7 @@ export default defineConfig({
     // Relative to the root
     outDir: "../dist"
   },
+  publicDir: 'assets',
   plugins: [
     // …
     react()
