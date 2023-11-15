@@ -20,7 +20,6 @@ services:
       - ./backend/.env
     environment:
       DB_HOST: postgres_server
-    command: npm run start
     volumes:
       - ./backend:/app
       - /app/node_modules

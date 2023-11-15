@@ -1,4 +1,4 @@
-FROM node:18-alpine3.18
+FROM node:21-alpine3.17
 
 WORKDIR /app
 
@@ -12,4 +12,4 @@ RUN npm install -g concurrently
 
 COPY . ./
 
-CMD ["concurrently", "npm:mg:run", "npm:build"]
+CMD ["concurrently", "npm:start:dev", "npm:mg:run" ]
