@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
-import Modal from "./modal/Modal";
-import frame from "/Frame.svg";
-import el19 from "/Ellipse 19.svg";
-import el21 from "/Ellipse 21.svg";
-import el22 from "/Ellipse 22.svg";
+import { Modal, Registration } from "./modal";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -100,81 +96,7 @@ const Navbar = () => {
             Log in <span aria-hidden="true">&rarr;</span>
           </button>
           <Modal active={modalActive} setActive={setModalActive}>
-            <h1 className="text-[30px] font-semibold text-center text-[#4D4AC8] mb-[27px] mt-[16px]">
-              Registration
-            </h1>
-
-            <div className="bg-[#E2E1FF] w-full rounded-[11px] mb-[50px] flex">
-              <img src={el19} alt="" className="ml-[19px] z-20" />
-              <input
-                type="text"
-                placeholder="MIchael_JSON"
-                className="m-[2px] pl-[13px] py-[5px] rounded-[8px] w-[382px] ml-[17px] text-[16px] font-semibold text-[#454380]"
-              />
-              <label className="absolute left-[103px] top-[72px] text-[#4D4AC8] text-[11px] font-bold">
-                username
-              </label>
-            </div>
-
-            <div className="bg-[#E2E1FF] w-full rounded-[11px] mb-[50px] flex">
-              <img src={el19} alt="" className="ml-[19px] z-20" />
-              <input
-                type="text"
-                placeholder="example@mail.com"
-                className="m-[2px] pl-[13px] py-[5px] rounded-[8px] w-[382px] ml-[17px] text-[16px] font-semibold text-[#454380]"
-              />
-              <label className="absolute left-[103px] top-[161px] text-[#4D4AC8] text-[11px] font-bold">
-                email
-              </label>
-            </div>
-
-            <div className="bg-[#E2E1FF] w-full rounded-[11px] mb-[50px] flex">
-              <img src={el21} alt="" className="ml-[19px] z-20" />
-              <input
-                type="text"
-                placeholder="XXXXXXX"
-                className="my-[2px] pl-[13px] py-[5px] rounded-[11px] w-[352px] ml-[17px] text-[16px] font-semibold text-[#454380]"
-              />
-              <img
-                src="../public/eye close.svg"
-                alt=""
-                className="ml-[3px]"
-              />
-              <label className="absolute left-[103px] top-[249px] text-[#4D4AC8] text-[11px] font-bold">
-                password
-              </label>
-            </div>
-
-            <div className="bg-[#E2E1FF] w-full rounded-[11px] mb-[21px] flex">
-              <img src={el22} alt="" className="ml-[19px] z-20" />
-              <input
-                type="text"
-                placeholder="fdrgyu7_Trdg"
-                className="my-[2px] pl-[13px] py-[5px] rounded-[11px] w-[352px] ml-[17px] text-[16px] font-semibold text-[#454380]"
-              />
-              <img src="../public/eye.svg" alt="" className="ml-[3px]" />
-              <label className="absolute left-[103px] top-[338px] text-[#4D4AC8] text-[11px] font-bold">
-                confirm password
-              </label>
-            </div>
-
-            <div className="flex justify-center">
-              <button className="bg-[#E2E1FF] rounded-[11px] text-[22px] py-[5px] px-[30px] text-[#4D4AC8] font-semibold">
-                create account
-              </button>
-            </div>
-
-            <div className=" absolute top-[105px] left-[76px] w-[4px] h-[268px] bg-[#4D4AC8] z-10 "></div>
-
-            <div className="flex items-center justify-center mt-[22px] mb-[28px] gap-[7px]">
-              <div className="text-[#454380] text-[22px] font-semibold">
-                already have an account ?
-              </div>
-
-              <img src={frame} alt="logo" />
-
-              <div className="text-[#4D4AC8] text-[22px] font-bold">login</div>
-            </div>
+            <Registration />
           </Modal>
         </div>
       </nav>
