@@ -2,7 +2,6 @@ import { Injectable, NestMiddleware } from '@nestjs/common'
 import { NextFunction, Response } from 'express'
 import { ExpressRequestInterface } from '@app/types/expressRequest.interface'
 import { verify } from 'jsonwebtoken'
-import { JWT_SECRET } from '@app/configs/JWT.config'
 import { UserService } from '@app/user/user.service'
 import { UserType } from '@app/user/types/user.type'
 
@@ -24,7 +23,7 @@ export class AuthMiddleware implements NestMiddleware {
 
     //Декодирование JWT токена авторизации
     try {
-      const decode = verify(token, JWT_SECRET) as UserType
+      const decode = verify(token, process.env.JWT_ACCESS_SECRET) as UserType
       req.user = await this.userService.findOneById(decode.id)
       next()
     } catch (e) {

@@ -11,7 +11,6 @@ import { Repository } from 'typeorm'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { USER_REPOSITORY } from '@app/constants/constants'
 import { sign } from 'jsonwebtoken'
-import { JWT_SECRET } from '@app/configs/JWT.config'
 import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import * as bcrypt from 'bcrypt'
@@ -19,6 +18,7 @@ import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ConfigService } from '@nestjs/config'
 import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
+import * as process from 'process'
 
 @Injectable()
 export class UserService {
@@ -118,7 +118,7 @@ export class UserService {
   }
 
   generateJwt(user: UserEntity): string {
-    return sign({ ...user }, JWT_SECRET)
+    return sign({ ...user }, process.env.JWT_ACCESS_SECRET)
   }
 
   buildUserResponse(user: UserEntity): UserResponseInterface {
