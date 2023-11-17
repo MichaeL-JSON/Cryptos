@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { UserEntity } from '@app/user/entities/user.entity'
 import * as jwt from 'jsonwebtoken'
-import process from 'process'
+import * as process from 'process'
 
 @Injectable()
 export class TokenService {
@@ -16,5 +16,9 @@ export class TokenService {
     })
 
     return { accessToken, refreshToken }
+  }
+
+  generateJwt(user: UserEntity): string {
+    return jwt.sign({ ...user }, process.env.JWT_ACCESS_SECRET)
   }
 }

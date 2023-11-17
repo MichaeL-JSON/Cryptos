@@ -10,7 +10,6 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { Repository } from 'typeorm'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { USER_REPOSITORY } from '@app/constants/constants'
-import { sign } from 'jsonwebtoken'
 import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import * as bcrypt from 'bcrypt'
@@ -18,7 +17,7 @@ import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ConfigService } from '@nestjs/config'
 import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
-import * as process from 'process'
+import { TokenService } from '@app/token/token.service'
 
 @Injectable()
 export class UserService {
@@ -26,6 +25,7 @@ export class UserService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: Repository<UserEntity>,
     private readonly appMailerService: AppMailerService,
+    private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -117,12 +117,8 @@ export class UserService {
     return `This action removes a #${id} user`
   }
 
-  generateJwt(user: UserEntity): string {
-    return sign({ ...user }, process.env.JWT_ACCESS_SECRET)
-  }
-
   buildUserResponse(user: UserEntity): UserResponseInterface {
-    return { user: { ...user, token: this.generateJwt(user) } }
+    return { user: { ...user, token: this.tokenService.generateJwt(user) } }
   }
 
   findOneById(id: number): Promise<UserEntity> {
