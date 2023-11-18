@@ -13,6 +13,8 @@ import storage from "redux-persist/lib/storage";
 import { coinApi } from "./coinApi";
 import { newsReducer } from "./news/news";
 import { converterReducer } from "./converter.api";
+import { newsApi } from "./news/newsApi";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 const persistConfig = {
   key: "root",
@@ -24,6 +26,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   [coinApi.reducerPath]: coinApi.reducer,
+  [newsApi.reducerPath]: newsApi.reducer,
   news: newsReducer,
   converter: converterReducer
 });
@@ -37,7 +40,9 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
       }
-    }).concat(coinApi.middleware)
+    }).concat(coinApi.middleware, newsApi.middleware)
 });
+
+setupListeners(store.dispatch);
 
 export const persistor = persistStore(store);

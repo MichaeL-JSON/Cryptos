@@ -19,7 +19,5 @@
     ]
   },
   "scripts": {
-    "prepare": "husky install",
-    "pre-commit": "lint-staged"
   }
 }
