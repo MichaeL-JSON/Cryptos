@@ -215,6 +215,7 @@ export const InputNews = ({
             setIsShowFavorites(true);
           }}
           className="absolute right-[12px] top-[10px]"
+          disabled={!state.activeSideLeft}
         >
           <svg
             width="25"

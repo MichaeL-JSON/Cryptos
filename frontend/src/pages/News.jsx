@@ -10,21 +10,28 @@ import { setNews } from "../redux/news/news";
 import FloatingButton from "../components/PostNews/ui/FloatingButton";
 import Skeleton from "../components/PostNews/ui/Skeleton";
 import { InputNews } from "../components/news/ui/InputNews";
+import { useGetAllNewsQuery } from "../redux/news/newsApi";
 
 const News = () => {
   const [sortValue, setSortValue] = useState("title");
-  const [isLoading, setIsLoading] = useState(true);
   const [displayed, setDisplayed] = useState(10);
   const [term, setTerm] = useState("");
   const [isShowFavorites, setIsShowFavorites] = useState(false);
 
+  const {data: dataQuery, isLoading, isFetching} = useGetAllNewsQuery();
+
   const { news: stateNews, favorites } = useSelector(state => state.news);
-  const favoritesOrAllNews = isShowFavorites ? favorites : stateNews;
+  const favoritesOrAllNews = isShowFavorites ? favorites : stateNews || [];
 
   const dispatch = useDispatch();
 
   const debounceSearch = useDebounce(term, 600);
-  const posts = usePosts(favoritesOrAllNews, sortValue, debounceSearch);
+  const posts = usePosts(
+    favoritesOrAllNews,
+    sortValue,
+    debounceSearch,
+    isShowFavorites
+  );
 
   const showMore = () => {
     setDisplayed(prev => prev + 10);
@@ -102,21 +109,29 @@ const News = () => {
 
   const getContent = data => {
     return data.slice(0, displayed).map(item => {
-      const title =
-        sortValue === "title" && debounceSearch && posts.length > 0
-          ? paintingText(item.title)
-          : item.title;
+      const getPaintText = (isPaintingNeeded, key) => {
+        if (key === "preview") {
+          const preview = createPreview(item.content);
+          return isPaintingNeeded ? paintingText(preview) : preview;
+        }
 
-      const content =
-        sortValue === "content" && debounceSearch && posts.length > 0
-          ? paintingText(item.content)
-          : item.content;
+        return isPaintingNeeded ? paintingText(item[key]) : item[key];
+      };
+      const isFavorites = isShowFavorites && debounceSearch && posts.length > 0;
 
-      const preview = createPreview(item.content);
-      const highlightedPreview =
-        sortValue === "content" && debounceSearch && posts.length > 0
-          ? paintingText(preview)
-          : preview;
+      const isSearch = !isFavorites;
+
+      const title = isShowFavorites
+        ? getPaintText(isFavorites, "title")
+        : getPaintText(isSearch && sortValue === "title", "title");
+
+      const content = isShowFavorites
+        ? getPaintText(isFavorites, "content")
+        : getPaintText(isSearch && sortValue === "content", "content");
+        
+      const preview = isShowFavorites
+        ? getPaintText(isFavorites, "preview")
+        : getPaintText(isSearch && sortValue === "content", "preview");
 
       return (
         <PostNews
@@ -125,7 +140,7 @@ const News = () => {
           title={title}
           content={content}
           image={item.image}
-          preview={highlightedPreview}
+          preview={preview}
         />
       );
     });
@@ -160,18 +175,9 @@ const News = () => {
       <div className="flex justify-center mt-14">Not Search Data</div>
     ) : null;
 
-  useEffect(() => {
-    const getData = () => {
-      setTimeout(() => {
-        setIsLoading(false);
-        const newsData = news.content.map((obj, index) => {
-          return { id: index + 1, ...obj };
-        });
-        dispatch(setNews(newsData));
-      }, 3000);
-    };
-    getData();
-  }, []);
+    useEffect(() => {
+      dispatch(setNews(dataQuery));
+    }, [dataQuery])
 
   return (
     <>
@@ -183,7 +189,7 @@ const News = () => {
           setSortValue={onHandleSelect}
         />
         <>
-          {!isLoading ? (
+          {!isLoading || !isFetching ? (
             <>
               <div>
                 {getContent(posts)}
