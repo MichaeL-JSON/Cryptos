@@ -1,15 +1,21 @@
-import { Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post, UsePipes, ValidationPipe } from '@nestjs/common'
 import { UserService } from '@app/user/user.service'
 import { AuthService } from '@app/auth/auth.service'
+import { TokenService } from '@app/token/token.service'
+import { CreateUserDto } from "@app/user/dto/create-user.dto";
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly userService: UserService,
+    private readonly tokenService: TokenService,
     private readonly authService: AuthService,
   ) {}
   @Post('registration')
-  async registrateUser() {}
+  @UsePipes(new ValidationPipe())
+  async registrateUser(@Body('user') createUserDto: CreateUserDto) {
+
+  }
 
   @Post('login')
   async loginUser() {}
