@@ -1,23 +1,22 @@
 {
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "eslint": "^8.53.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "eslint-plugin-react": "^7.33.2",
     "husky": "^8.0.3",
-    "lint-staged": "^15.1.0",
-    "prettier": "^3.1.0"
+    "lint-staged": "^15.1.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts, tsx}": [
-      "npm run lint:fix",
-      "npm run lint",
-      "npm run format:format",
-      "npm run format:check",
+      "npm run --prefix ./frontend lint:fix",
+      "npm run --prefix ./frontend lint",
+      "npm run --prefix ./frontend format:format",
+      "npm run --prefix ./frontend format:check",
+
+      "npm run --prefix ./backend lint:fix",
+      "npm run --prefix ./backend lint",
+      "npm run --prefix ./backend format",
       "git add"
     ]
   },
   "scripts": {
+    "pre-commit": "lint-staged"
   }
 }
