@@ -10,7 +10,6 @@
       "npm run --prefix ./frontend format:format",
       "npm run --prefix ./frontend format:check",
       "npm run --prefix ./backend lint:fix",
-      "npm run --prefix ./backend lint",
       "npm run --prefix ./backend format"
     ]
   },

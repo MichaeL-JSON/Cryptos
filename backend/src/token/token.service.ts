@@ -5,25 +5,32 @@ import * as process from 'process'
 import { TOKEN_REPOSITORY } from '@app/constants/constants'
 import { Equal, Repository } from 'typeorm'
 import { TokenEntity } from '@app/token/entities/token.entity'
+import { SequreUserDataDto } from '@app/user/dto/sequre-user-data.dto'
 
 @Injectable()
 export class TokenService {
   constructor(
     @Inject(TOKEN_REPOSITORY)
     private readonly tokenRepository: Repository<TokenEntity>,
-  ) {
-  }
+  ) {}
 
-  generateTokens(user: UserEntity) {
-    const accessToken = jwt.sign(user, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: '15m',
+  /**
+   * Генерация JWT-токенов
+   * Вызывается при успешной регистрации или аутентификации
+   * @param user UserEntity
+   */
+  generateTokens(user: SequreUserDataDto) {
+    const accessToken = jwt.sign({ ...user }, process.env.JWT_ACCESS_SECRET, {
+      //Время жизни accessToken составляет 15 минут
+      expiresIn: 900,
     })
 
-    const refreshToken = jwt.sign(user, process.env.JWT_REFRESH_SECRET, {
+    const refreshToken = jwt.sign({ ...user }, process.env.JWT_REFRESH_SECRET, {
       //Если пользователь не заходил на сайт в течение этого времени, ему нужно будет снова делать login
       expiresIn: '5d',
     })
 
+    console.log({ accessToken, refreshToken })
     return { accessToken, refreshToken }
   }
 
@@ -31,24 +38,33 @@ export class TokenService {
     return jwt.sign({ ...user }, process.env.JWT_ACCESS_SECRET)
   }
 
-  async saveRefreshToken(user: UserEntity, refreshToken: string) {
+  /**
+   * Сохранение refreshToken в таблицу tokens.
+   * Вызывается при успешной авторизации или аутентификации.
+   * @param user UserEntity
+   * @param refreshToken
+   */
+  async saveRefreshToken(
+    user: SequreUserDataDto,
+    refreshToken: string,
+  ): Promise<TokenEntity> {
     const tokenData = await this.tokenRepository.findOne({
       where: { userId: Equal(user.id) },
       relations: { userId: true },
     })
 
-    //Обновление refreshToken аутентифицированного пользователя
+    //Обновление refreshToken пользователя при успешной аутентификации
     if (tokenData) {
       tokenData.refreshToken = refreshToken
       return await this.tokenRepository.save(tokenData)
     }
 
-    //Сохранение refreshToken в БД при успешной аутентификации пользователя
+    //Сохранение refreshToken в БД при успешной аутентификации или регистрации пользователя
     const newToken = await this.tokenRepository.create({
       userId: user,
       refreshToken: refreshToken,
     })
 
-    return this.tokenRepository.save(newToken)
+    return await this.tokenRepository.save(newToken)
   }
 }

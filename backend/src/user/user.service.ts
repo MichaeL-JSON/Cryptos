@@ -42,10 +42,12 @@ export class UserService {
     }
 
     const newUser = this.userRepository.create(createUserDto)
+
+    //Генерация токена для ссылки на подтверждение создания учётной записи
     const token = await bcrypt.hash(newUser.email, 10)
     newUser.token = token
 
-    const user = await this.userRepository.save(newUser)
+    const user = await this.saveUser(newUser)
 
     if (user) {
       const confirmEmailLink = `http://${this.configService.get(
@@ -53,12 +55,16 @@ export class UserService {
       )}:5000/api/user/activate?id=${user.id}&token=${token}`
       const htmlMessage = `
         <p>You were registered under the name ${user.username} on the site Cryptos!</p>
-        <p>Please, use this link to <a href="${confirmEmailLink}">confirm registration and activate your account!</a></p>`
+        <p>Please, use this link to <a href='${confirmEmailLink}'>confirm registration and activate your account!</a></p>`
 
       await this.appMailerService.sendMail(htmlMessage, user)
     }
 
     return user
+  }
+
+  async saveUser(newUser: UserEntity) {
+    return await this.userRepository.save(newUser)
   }
 
   async activate(userId: number, token: string): Promise<string> {

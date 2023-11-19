@@ -1,9 +1,25 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common'
 import { UserService } from '@app/user/user.service'
 import { AuthService } from '@app/auth/auth.service'
 import { TokenService } from '@app/token/token.service'
-import { CreateUserDto } from "@app/user/dto/create-user.dto";
+import { CreateUserDto } from '@app/user/dto/create-user.dto'
+import { ResponseUserDataDto } from '@app/user/dto/response-user- data.dto'
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger'
 
+@ApiTags('Auth')
+@ApiExtraModels(CreateUserDto, ResponseUserDataDto)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -11,10 +27,23 @@ export class AuthController {
     private readonly tokenService: TokenService,
     private readonly authService: AuthService,
   ) {}
+
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(CreateUserDto),
+        },
+      },
+    },
+  })
   @Post('registration')
   @UsePipes(new ValidationPipe())
-  async registrateUser(@Body('user') createUserDto: CreateUserDto) {
-
+  async registrateUser(
+    @Body('user') createUserDto: CreateUserDto,
+  ): Promise<ResponseUserDataDto> {
+    return await this.authService.registrateUser(createUserDto)
   }
 
   @Post('login')

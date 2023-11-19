@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import LayoutBorderRadius from "../layouts/LayoutBorderRadius";
 
-import { news } from "../data/news";
+// import { news } from "../data/news";
 import PostNews from "../components/PostNews/PostNews";
 import { useDebounce } from "../hooks/useDebounce";
 import { usePosts } from "../hooks/usePosts";
@@ -18,7 +18,7 @@ const News = () => {
   const [term, setTerm] = useState("");
   const [isShowFavorites, setIsShowFavorites] = useState(false);
 
-  const {data: dataQuery, isLoading, isFetching} = useGetAllNewsQuery();
+  const { data: dataQuery, isLoading, isFetching } = useGetAllNewsQuery();
 
   const { news: stateNews, favorites } = useSelector(state => state.news);
   const favoritesOrAllNews = isShowFavorites ? favorites : stateNews || [];
@@ -128,7 +128,7 @@ const News = () => {
       const content = isShowFavorites
         ? getPaintText(isFavorites, "content")
         : getPaintText(isSearch && sortValue === "content", "content");
-        
+
       const preview = isShowFavorites
         ? getPaintText(isFavorites, "preview")
         : getPaintText(isSearch && sortValue === "content", "preview");
@@ -175,9 +175,9 @@ const News = () => {
       <div className="flex justify-center mt-14">Not Search Data</div>
     ) : null;
 
-    useEffect(() => {
-      dispatch(setNews(dataQuery));
-    }, [dataQuery])
+  useEffect(() => {
+    dispatch(setNews(dataQuery));
+  }, [dataQuery]);
 
   return (
     <>
