@@ -5,9 +5,9 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { UserEntity } from '@app/user/entities/user.entity'
+// import { UserEntity } from '@app/user/entities/user.entity'
 
-// import { UserEntity } from './../../user/entities/user.entity'
+import { UserEntity } from './../../user/entities/user.entity'
 
 @Entity({ name: 'tokens' })
 export class TokenEntity {
