@@ -3,8 +3,6 @@ import { TokenService } from '@app/token/token.service'
 import { CreateUserDto } from '@app/user/dto/create-user.dto'
 import { UserService } from '@app/user/user.service'
 import { ResponseUserDataDto } from '@app/user/dto/response-user- data.dto'
-import { MailerService } from '@nestjs-modules/mailer'
-import { AppMailerModule } from '@app/app-mailer/app-mailer.module'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 
 @Injectable()
@@ -27,7 +25,7 @@ export class AuthService {
 
       this.appMailerService.sendActivationMail(newUser)
 
-      delete newUser.token
+      delete newUser.activationToken
 
       return {
         ...tokens,
@@ -39,14 +37,12 @@ export class AuthService {
   async loginUser() {}
 
   // eslint-disable-next-line prettier/prettier
-  async logoutUser() {
-  }
+  async logoutUser() {}
 
   async activateUser() {}
 
   // eslint-disable-next-line
-  async refreshAccessToken() {
-  }
+  async refreshAccessToken() {}
 
   async getUsers() {}
 }

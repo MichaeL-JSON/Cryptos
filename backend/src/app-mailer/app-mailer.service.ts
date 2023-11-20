@@ -9,8 +9,7 @@ export class AppMailerService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-  ) {
-  }
+  ) {}
 
   async sendMail(
     html: string = 'It is fine!',
@@ -37,17 +36,17 @@ export class AppMailerService {
   generateHtmlRegistrationMessage(newUser: Omit<UserEntity, 'password'>) {
     return `
         <p>You were registered under the name ${
-      newUser.username
-    } on the site Cryptos!</p>
+          newUser.username
+        } on the site Cryptos!</p>
         <p>Please, use this link to <a href='${this.generateActivationLink(
-      newUser,
-    )}'>confirm registration and activate your account!</a></p>`
+          newUser,
+        )}'>confirm registration and activate your account!</a></p>`
   }
 
   generateActivationLink(newUser: Omit<UserEntity, 'password'>) {
     return `http://${this.configService.get(
       'API_HOST',
-    )}:5000/api/user/activate?id=${newUser.id}&token=${newUser.token}`
+    )}:5000/api/user/activate?id=${newUser.id}&token=${newUser.activationToken}`
   }
 
   sendActivationMail(newUser: Omit<UserEntity, 'password'>) {

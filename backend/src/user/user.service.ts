@@ -44,12 +44,9 @@ export class UserService {
     const newUser = this.userRepository.create(createUserDto)
 
     //Генерация токена для ссылки на подтверждение создания учётной записи
-    const token = await bcrypt.hash(newUser.email, 10)
-    newUser.token = token
+    newUser.activationToken = await bcrypt.hash(newUser.email, 10)
 
-    const user = await this.saveUser(newUser)
-
-    return user
+    return await this.saveUser(newUser)
   }
 
   async saveUser(newUser: UserEntity) {
@@ -58,10 +55,10 @@ export class UserService {
 
   async activate(userId: number, token: string): Promise<string> {
     const user = await this.findOneById(userId)
-    if (token === user.token) {
+    if (token === user.activationToken) {
       await this.userRepository.update(userId, {
         active: true,
-        token: '',
+        activationToken: '',
       })
 
       return `http://${this.configService.get('API_HOST')}:3000/login`
@@ -145,21 +142,21 @@ export class UserService {
       )
     }
 
-    const token = await bcrypt.hash(user.password, 10)
+    const activationToken = await bcrypt.hash(user.password, 10)
 
-    await this.setToken(user.id, token)
+    await this.setToken(user.id, activationToken)
 
     const resetPasswordLink = `http://${this.configService.get(
       'API_HOST',
-    )}:3000/user/reset-password?token=${token}`
+    )}:3000/user/reset-password?token=${activationToken}`
 
     const htmlMessage = `<p>Please, use this link to <a href="${resetPasswordLink}">reset your password!</a></p>`
 
     await this.appMailerService.sendMail(htmlMessage, user)
   }
 
-  async setToken(userId: number, token: string): Promise<void> {
-    await this.userRepository.update(userId, { token })
+  async setToken(userId: number, activationToken: string): Promise<void> {
+    await this.userRepository.update(userId, { activationToken })
   }
 
   async changePassword(
@@ -175,7 +172,7 @@ export class UserService {
 
     await this.userRepository.update(userId, {
       password: hashPassword,
-      token: '',
+      activationToken: '',
     })
 
     return dbUser

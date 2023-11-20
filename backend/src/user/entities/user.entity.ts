@@ -28,8 +28,8 @@ export class UserEntity {
   @Column({ default: false })
   active: boolean
 
-  @Column({ default: '' })
-  token: string
+  @Column({ name: 'activation_token', default: '' })
+  activationToken: string
 
   @Column({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date

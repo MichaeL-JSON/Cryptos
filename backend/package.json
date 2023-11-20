@@ -25,6 +25,7 @@
     "mg:generate": "npm run typeorm_ts -- migration:generate ./migrations/migration",
     "mg:run": "npm run typeorm_ts -- migration:run",
     "mg:revert": "npm run typeorm_ts -- migration:revert",
+    "mg:lint": "eslint ./migrations/**/*.{js,jsx,ts,tsx} --fix",
     "lint:fix": "eslint ./src/**/*.{js,jsx,ts,tsx} --fix"
   },
   "dependencies": {
