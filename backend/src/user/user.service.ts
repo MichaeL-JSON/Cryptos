@@ -49,19 +49,6 @@ export class UserService {
 
     const user = await this.saveUser(newUser)
 
-    if (user) {
-      const confirmEmailLink = `http://${this.configService.get(
-        'API_HOST',
-      )}:5000/api/user/activate?id=${user.id}&token=${token}`
-      const htmlMessage = `
-        <p>You were registered under the name ${user.username} on the site Cryptos!</p>
-        <p>Please, use this link to <a href='${confirmEmailLink}'>confirm registration and activate your account!</a></p>`
-
-      await this.appMailerService.sendMail(htmlMessage, user)
-    }
-
-    delete user.token
-
     return user
   }
 

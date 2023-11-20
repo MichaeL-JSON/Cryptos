@@ -30,7 +30,6 @@ export class TokenService {
       expiresIn: '5d',
     })
 
-    console.log({ accessToken, refreshToken })
     return { accessToken, refreshToken }
   }
 
