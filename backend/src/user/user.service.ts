@@ -60,6 +60,8 @@ export class UserService {
       await this.appMailerService.sendMail(htmlMessage, user)
     }
 
+    delete user.token
+
     return user
   }
 
