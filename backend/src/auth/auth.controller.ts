@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   Post,
+  Query,
+  Redirect,
   Res,
   UsePipes,
   ValidationPipe,
@@ -55,16 +57,28 @@ export class AuthController {
     return userData
   }
 
+  //Активация зарегистрированного пользователя
+  @Redirect()
+  @Get('activate')
+  async activateUser(
+    @Query('userId') userId: number,
+    @Query('activationToken') activationToken: string,
+  ) {
+    const frontendLoginUrl: string = await this.authService.activateUser(
+      userId,
+      activationToken,
+    )
+
+    //Перенаправление на страницу аутентификации
+    return { url: frontendLoginUrl }
+  }
+
   @Post('login')
   async loginUser() {}
 
   //Удаление refresh-token из БД
   @Post('logout')
   async logoutUser() {}
-
-  //Активация зарегистрированного пользователя
-  @Get('activate')
-  async activateUser() {}
 
   //Обновление access-token путём получения refresh-token
   @Get('refresh')

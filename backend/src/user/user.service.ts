@@ -53,15 +53,17 @@ export class UserService {
     return await this.userRepository.save(newUser)
   }
 
-  async activate(userId: number, token: string): Promise<string> {
+  async activate(userId: number, activationToken: string): Promise<string> {
     const user = await this.findOneById(userId)
-    if (token === user.activationToken) {
+    if (activationToken === user.activationToken) {
       await this.userRepository.update(userId, {
         active: true,
         activationToken: '',
       })
 
-      return `http://${this.configService.get('API_HOST')}:3000/login`
+      return `http://${this.configService.get(
+        'CLIENT_HOST',
+      )}:${this.configService.get('CLIENT_PORT')}/login`
     }
     throw new HttpException('Token is not valid', HttpStatus.NOT_ACCEPTABLE)
   }

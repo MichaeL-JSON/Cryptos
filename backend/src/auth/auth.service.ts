@@ -34,12 +34,14 @@ export class AuthService {
     }
   }
 
+  async activateUser(userId: number, activationToken: string): Promise<string> {
+    return await this.userService.activate(userId, activationToken)
+  }
+
   async loginUser() {}
 
   // eslint-disable-next-line prettier/prettier
   async logoutUser() {}
-
-  async activateUser() {}
 
   // eslint-disable-next-line
   async refreshAccessToken() {}

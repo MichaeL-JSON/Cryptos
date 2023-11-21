@@ -46,7 +46,11 @@ export class AppMailerService {
   generateActivationLink(newUser: Omit<UserEntity, 'password'>) {
     return `http://${this.configService.get(
       'API_HOST',
-    )}:5000/api/user/activate?id=${newUser.id}&token=${newUser.activationToken}`
+    )}:${this.configService.get('API_PORT')}/${this.configService.get(
+      'API_PREFIX',
+    )}/auth/activate?userId=${newUser.id}&activationToken=${
+      newUser.activationToken
+    }`
   }
 
   sendActivationMail(newUser: Omit<UserEntity, 'password'>) {
