@@ -123,10 +123,21 @@ export class UserService {
     })
   }
 
-  async findOneByEmail(email: string): Promise<UserEntity> {
-    return await this.userRepository.findOne({
-      where: { email },
-    })
+  async findOneByEmail(
+    email: string,
+    select: string[] = [],
+    getRefreshToken: boolean = false,
+  ): Promise<UserEntity> {
+    const selectOption = {}
+    if (select.length) {
+      selectOption['select'] = select
+    }
+    if (getRefreshToken) {
+      selectOption['tokens'] = select
+    }
+    const options = { where: { email }, ...selectOption }
+    console.log(options)
+    return await this.userRepository.findOne(options)
   }
 
   async findOneByUserName(username: string): Promise<UserEntity> {

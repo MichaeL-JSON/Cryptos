@@ -21,6 +21,7 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger'
+import { LoginUserDto } from '@app/user/dto/login-user.dto'
 
 @ApiTags('Auth')
 @ApiExtraModels(CreateUserDto, ResponseUserDataDto)
@@ -73,8 +74,23 @@ export class AuthController {
     return { url: frontendLoginUrl }
   }
 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(LoginUserDto),
+        },
+      },
+    },
+  })
   @Post('login')
-  async loginUser() {}
+  @UsePipes(new ValidationPipe())
+  async loginUser(@Body('user') loginUserDto: LoginUserDto) {
+    const userData = await this.authService.loginUser(loginUserDto)
+
+    return userData
+  }
 
   //Удаление refresh-token из БД
   @Post('logout')
