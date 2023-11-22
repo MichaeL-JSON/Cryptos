@@ -1,6 +1,14 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import { ApiProperty } from '@nestjs/swagger'
+import { TokenEntity } from './../../token/entities/token.entity'
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -28,8 +36,9 @@ export class UserEntity {
   @Column({ default: false })
   active: boolean
 
-  @Column({ name: 'activation_token', default: '' })
-  activationToken: string
+  @OneToOne(() => TokenEntity, (token) => token.user)
+  @JoinColumn({ name: 'token_id' })
+  token: TokenEntity
 
   @Column({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date
