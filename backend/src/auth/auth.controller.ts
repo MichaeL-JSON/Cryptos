@@ -22,6 +22,8 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
+import { UserEntity } from '@app/user/entities/user.entity'
+import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 
 @ApiTags('Auth')
 @ApiExtraModels(CreateUserDto, ResponseUserDataDto)
@@ -31,6 +33,7 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
     private readonly authService: AuthService,
+    private readonly appMailerService: AppMailerService,
   ) {}
 
   @ApiBody({
@@ -49,13 +52,18 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
     @Body('user') createUserDto: CreateUserDto,
   ): Promise<ResponseUserDataDto> {
-    const userData = await this.authService.registrateUser(createUserDto)
-    //Добавление в ответ httpOnly-cookie, значение которого невозможно изменять и получать внутри браузера с помощью JS
-    response.cookie('refreshToken', userData.refreshToken, {
-      maxAge: 5 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    })
-    return userData
+    const dbUser: UserEntity =
+      await this.authService.registrateUser(createUserDto)
+
+    if (dbUser) {
+      console.log('newUser: ', dbUser)
+      delete dbUser?.password
+
+      this.appMailerService.sendActivationMail(dbUser)
+
+      this.authService.setCookie(response, dbUser)
+      return this.authService.buildAuthResponse(dbUser)
+    }
   }
 
   //Активация зарегистрированного пользователя
@@ -86,10 +94,15 @@ export class AuthController {
   })
   @Post('login')
   @UsePipes(new ValidationPipe())
-  async loginUser(@Body('user') loginUserDto: LoginUserDto) {
-    const userData = await this.authService.loginUser(loginUserDto)
+  async loginUser(
+    @Body('user') loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const userData: UserEntity = await this.authService.loginUser(loginUserDto)
 
-    return userData
+    this.authService.setCookie(response, userData)
+
+    return this.authService.buildAuthResponse(userData)
   }
 
   //Удаление refresh-token из БД

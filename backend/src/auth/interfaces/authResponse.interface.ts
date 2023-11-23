@@ -1,5 +1,5 @@
 import { UserType } from '@app/user/types/user.type'
 
-export interface UserResponseInterface {
+export interface AuthResponseInterface {
   user: UserType & { token: string }
 }

@@ -16,6 +16,7 @@ import { IToken } from '@app/common/interfaces/itoken.interface'
 import { TokenEntity } from '@app/token/entities/token.entity'
 import { instanceToPlain, plainToInstance } from 'class-transformer'
 import { SequreCreateUserDto } from '@app/user/dto/sequre-create-user.dto'
+import { Response } from 'express'
 
 @Injectable()
 export class AuthService {
@@ -25,9 +26,7 @@ export class AuthService {
     private readonly appMailerService: AppMailerService,
   ) {}
 
-  async registrateUser(
-    createUserDto: CreateUserDto,
-  ): Promise<ResponseUserDataDto> {
+  async registrateUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     if (await this.userService.existsUser(createUserDto)) {
       throw new HttpException(
         'Email address or username is already taken!',
@@ -51,31 +50,19 @@ export class AuthService {
     const createdToken: TokenEntity =
       await this.tokenService.createTokens(generatedToken)
 
-    const newUser = await this.userService.create(createUserDto, createdToken)
-
-    if (newUser) {
-      console.log('newUser: ', newUser)
-      delete newUser?.password
-
-      this.appMailerService.sendActivationMail(newUser)
-
-      return {
-        ...generatedToken,
-        user: newUser,
-      }
-    }
+    return await this.userService.create(createUserDto, createdToken)
   }
 
   async activateUser(userId: number, activationToken: string): Promise<string> {
     return await this.userService.activate(userId, activationToken)
   }
 
-  async loginUser(loginUserDto: LoginUserDto) {
+  async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
     const dbUser: UserEntity = await this.userService.findOneByEmail(
       loginUserDto.email,
-      ['id', 'username', 'email', 'password', 'avatar'],
+      ['id', 'username', 'email', 'password', 'avatar', 'token'],
     )
-    console.log(dbUser)
+
     if (
       !dbUser ||
       !(await bcrypt.compare(loginUserDto.password, dbUser.password))
@@ -83,8 +70,6 @@ export class AuthService {
       throw new UnauthorizedException()
     }
 
-    //Удаляем свойство password из объекта, содержащего данные пользователя
-    delete dbUser.password
     return dbUser
   }
 
@@ -96,7 +81,18 @@ export class AuthService {
 
   async getUsers() {}
 
-  /*  buildAuthResponse(user: UserEntity): UserResponseInterface {
-      return { user: { ...user, token: this.tokenService.generateJwt(user) } }
-    }*/
+  buildAuthResponse(dbUser: UserEntity): ResponseUserDataDto {
+    delete dbUser.password
+    delete dbUser.token.id
+    delete dbUser.token.activationToken
+    return { user: { ...dbUser } }
+  }
+
+  setCookie(response: Response, dbUser: UserEntity): Response {
+    //Добавление в ответ httpOnly-cookie, значение которого невозможно изменять и получать внутри браузера с помощью JS
+    return response.cookie('refreshToken', dbUser.token.refreshToken, {
+      maxAge: 5 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    })
+  }
 }

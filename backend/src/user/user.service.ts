@@ -43,12 +43,12 @@ export class UserService {
   }
 
   async activate(userId: number, activationToken: string): Promise<string> {
-    const user = await this.findOneById(userId)
-    if (activationToken === user.token.activationToken) {
-      await this.userRepository.update(userId, {
-        active: true,
-        token: { activationToken: '' },
-      })
+    const dbUser: UserEntity = await this.findOneById(userId)
+    console.log(dbUser)
+    if (activationToken === dbUser.token.activationToken) {
+      dbUser.active = true
+      dbUser.token.activationToken = ''
+      await this.userRepository.save(dbUser)
 
       return `http://${this.configService.get(
         'CLIENT_HOST',
@@ -113,18 +113,21 @@ export class UserService {
 
   async findOneByEmail(
     email: string,
-    select: string[] = [],
-    getRefreshToken: boolean = false,
+    selectedFields: string[] = [],
   ): Promise<UserEntity> {
     const selectOption = {}
-    if (select.length) {
-      selectOption['select'] = select
+    if (selectedFields.length) {
+      selectOption['select'] = selectedFields
     }
-    if (getRefreshToken) {
-      selectOption['tokens'] = select
+
+    if (selectedFields.includes('token')) {
+      selectOption['relations'] = {
+        token: true,
+      }
     }
+
     const options = { where: { email }, ...selectOption }
-    console.log(options)
+
     return await this.userRepository.findOne(options)
   }
 
