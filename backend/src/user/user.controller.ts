@@ -5,21 +5,15 @@ import {
   Get,
   Param,
   Post,
-  Put,
   Query,
   Redirect,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
-import { User } from '@app/user/decorators/user.decorator'
-import { UserEntity } from '@app/user/entities/user.entity'
-import { AuthGuard } from '@app/user/guards/auth.guard'
 import {
   ApiBody,
   ApiExcludeEndpoint,
@@ -29,7 +23,6 @@ import {
 } from '@nestjs/swagger'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
-import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
 
 @ApiTags('Users')
 @ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
@@ -40,25 +33,6 @@ export class UserController {
     private readonly appMailerService: AppMailerService,
   ) {}
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        user: {
-          $ref: getSchemaPath(CreateUserDto),
-        },
-      },
-    },
-  })
-  @Post('users')
-  @UsePipes(new ValidationPipe())
-  async create(
-    @Body('user') createUserDto: CreateUserDto,
-  ): Promise<UserResponseInterface> {
-    const newUser = await this.userService.create(createUserDto)
-    return this.userService.buildUserResponse(newUser)
-  }
-
   @Redirect()
   @Get('user/activate')
   async activate(
@@ -68,36 +42,7 @@ export class UserController {
     return { url: await this.userService.activate(userId, token) }
   }
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        user: {
-          $ref: getSchemaPath(LoginUserDto),
-        },
-      },
-    },
-  })
-  @Post('users/login')
-  @UsePipes(new ValidationPipe())
-  async login(
-    @Body('user') loginUserDto: LoginUserDto,
-  ): Promise<UserResponseInterface> {
-    const dbUser = await this.userService.login(loginUserDto)
-    return this.userService.buildUserResponse(dbUser)
-  }
-
-  @Get('user')
-  //Для защиты маршрута от неаутентифицированных пользователей
-  @UseGuards(AuthGuard)
-  async getCurrentUser(
-    @User() user: UserEntity,
-    // @User('id') userId: number,
-  ): Promise<UserResponseInterface> {
-    return this.userService.buildUserResponse(user)
-  }
-
-  @ApiBody({
+  /*  @ApiBody({
     schema: {
       type: 'object',
       properties: {
@@ -118,7 +63,7 @@ export class UserController {
       updateUserDto,
     )
     return this.userService.buildUserResponse(updatedUser)
-  }
+  }*/
 
   @ApiExcludeEndpoint()
   @Get()
@@ -161,7 +106,7 @@ export class UserController {
     await this.userService.forgotPassword(forgotPasswordDto)
   }
 
-  @ApiBody({ type: ChangePasswordDto })
+  /*  @ApiBody({ type: ChangePasswordDto })
   @Put('user/change-password')
   @UseGuards(AuthGuard)
   @UsePipes(new ValidationPipe())
@@ -175,5 +120,5 @@ export class UserController {
     )
 
     return this.userService.buildUserResponse(updatedUser)
-  }
+  }*/
 }

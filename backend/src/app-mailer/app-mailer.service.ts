@@ -49,7 +49,7 @@ export class AppMailerService {
     )}:${this.configService.get('API_PORT')}/${this.configService.get(
       'API_PREFIX',
     )}/auth/activate?userId=${newUser.id}&activationToken=${
-      newUser.activationToken
+      newUser.token.activationToken
     }`
   }
 

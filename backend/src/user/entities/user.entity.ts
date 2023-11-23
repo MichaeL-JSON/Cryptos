@@ -36,7 +36,9 @@ export class UserEntity {
   @Column({ default: false })
   active: boolean
 
-  @OneToOne(() => TokenEntity, (token) => token.user)
+  @OneToOne(() => TokenEntity, (token) => token.user, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'token_id' })
   token: TokenEntity
 

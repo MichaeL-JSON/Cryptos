@@ -10,7 +10,6 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { Repository } from 'typeorm'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { USER_REPOSITORY } from '@app/constants/constants'
-import { UserResponseInterface } from '@app/user/types/userResponse.interface'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import * as bcrypt from 'bcrypt'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
@@ -18,6 +17,7 @@ import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ConfigService } from '@nestjs/config'
 import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
 import { TokenService } from '@app/token/token.service'
+import { TokenEntity } from '@app/token/entities/token.entity'
 
 @Injectable()
 export class UserService {
@@ -29,23 +29,12 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const userByEmail = await this.findOneByEmail(createUserDto.email)
-
-    const userByUserName = await this.findOneByUserName(createUserDto.username)
-
-    if (userByEmail || userByUserName) {
-      throw new HttpException(
-        'Email address or username is already taken!',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      )
-    }
-
+  async create(
+    createUserDto: CreateUserDto,
+    tokens: TokenEntity,
+  ): Promise<UserEntity> {
     const newUser = this.userRepository.create(createUserDto)
-
-    //Генерация токена для ссылки на подтверждение создания учётной записи
-    newUser.activationToken = await bcrypt.hash(newUser.email, 10)
-
+    newUser.token = tokens
     return await this.saveUser(newUser)
   }
 
@@ -55,10 +44,10 @@ export class UserService {
 
   async activate(userId: number, activationToken: string): Promise<string> {
     const user = await this.findOneById(userId)
-    if (activationToken === user.activationToken) {
+    if (activationToken === user.token.activationToken) {
       await this.userRepository.update(userId, {
         active: true,
-        activationToken: '',
+        token: { activationToken: '' },
       })
 
       return `http://${this.configService.get(
@@ -111,14 +100,13 @@ export class UserService {
     return `This action removes a #${id} user`
   }
 
-  buildUserResponse(user: UserEntity): UserResponseInterface {
-    return { user: { ...user, token: this.tokenService.generateJwt(user) } }
-  }
-
   findOneById(id: number): Promise<UserEntity> {
     return this.userRepository.findOne({
       where: {
         id,
+      },
+      relations: {
+        token: true,
       },
     })
   }
@@ -147,47 +135,48 @@ export class UserService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
-    const user = await this.findOneByEmail(forgotPasswordDto.email)
-    if (!user) {
+    const dbUser = await this.findOneByEmail(forgotPasswordDto.email)
+    if (!dbUser) {
       throw new HttpException(
         'A user with this email address is not registered',
         HttpStatus.NOT_FOUND,
       )
     }
 
-    const activationToken = await bcrypt.hash(user.password, 10)
+    const activationToken = await bcrypt.hash(dbUser.email, 10)
+    dbUser.token.activationToken = activationToken
 
-    await this.setToken(user.id, activationToken)
+    await this.userRepository.save(dbUser)
 
     const resetPasswordLink = `http://${this.configService.get(
       'API_HOST',
     )}:3000/user/reset-password?token=${activationToken}`
 
-    const htmlMessage = `<p>Please, use this link to <a href="${resetPasswordLink}">reset your password!</a></p>`
+    const htmlMessage = `<p>Please, use this link to <a href='${resetPasswordLink}'>reset your password!</a></p>`
 
-    await this.appMailerService.sendMail(htmlMessage, user)
-  }
-
-  async setToken(userId: number, activationToken: string): Promise<void> {
-    await this.userRepository.update(userId, { activationToken })
+    await this.appMailerService.sendMail(htmlMessage, dbUser)
   }
 
   async changePassword(
     userId: number,
     changePasswordDto: ChangePasswordDto,
   ): Promise<UserEntity> {
-    const dbUser = await this.findOneById(userId)
-    if (!dbUser) {
+    const updatableUser = await this.findOneById(userId)
+    if (!updatableUser) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND)
     }
 
-    const hashPassword = await bcrypt.hash(changePasswordDto.password, 10)
+    updatableUser.password = await bcrypt.hash(changePasswordDto.password, 10)
+    updatableUser.token.activationToken = ''
 
-    await this.userRepository.update(userId, {
-      password: hashPassword,
-      activationToken: '',
-    })
+    return await this.userRepository.save(updatableUser)
+  }
 
-    return dbUser
+  async existsUser(createUserDto: CreateUserDto): Promise<boolean> {
+    const userByEmail = await this.findOneByEmail(createUserDto.email)
+
+    const userByUserName = await this.findOneByUserName(createUserDto.username)
+
+    return Boolean(userByEmail || userByUserName)
   }
 }

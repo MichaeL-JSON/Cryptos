@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { TokenService } from '@app/token/token.service'
 import { CreateUserDto } from '@app/user/dto/create-user.dto'
 import { UserService } from '@app/user/user.service'
@@ -7,6 +12,10 @@ import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import { UserEntity } from '@app/user/entities/user.entity'
 import * as bcrypt from 'bcrypt'
+import { IToken } from '@app/common/interfaces/itoken.interface'
+import { TokenEntity } from '@app/token/entities/token.entity'
+import { instanceToPlain, plainToInstance } from 'class-transformer'
+import { SequreCreateUserDto } from '@app/user/dto/sequre-create-user.dto'
 
 @Injectable()
 export class AuthService {
@@ -19,19 +28,39 @@ export class AuthService {
   async registrateUser(
     createUserDto: CreateUserDto,
   ): Promise<ResponseUserDataDto> {
-    const newUser = await this.userService.create(createUserDto)
-    if (newUser) {
-      delete newUser?.password
+    if (await this.userService.existsUser(createUserDto)) {
+      throw new HttpException(
+        'Email address or username is already taken!',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      )
+    }
 
-      const tokens = this.tokenService.generateTokens(newUser)
-      await this.tokenService.saveRefreshToken(newUser, tokens.refreshToken)
+    /*  Преобразование экземпляра класса CreateUserDto в экземпляр класса
+    SequreCreateUserDto с помощью декоратора @Exclude({ toPlainOnly: true })
+    свойства password в  CreateUserDto для исключения передачи конфиденциальных данных в JWT-токен*/
+    const plainCreateUserDto = instanceToPlain(createUserDto)
+    delete plainCreateUserDto.password
+    const sequreCreateUserDto: SequreCreateUserDto = plainToInstance(
+      SequreCreateUserDto,
+      plainCreateUserDto,
+    )
+    console.log('sequreCreateUserDto: ', sequreCreateUserDto)
+    const generatedToken: IToken =
+      await this.tokenService.generateTokens(sequreCreateUserDto)
+
+    const createdToken: TokenEntity =
+      await this.tokenService.createTokens(generatedToken)
+
+    const newUser = await this.userService.create(createUserDto, createdToken)
+
+    if (newUser) {
+      console.log('newUser: ', newUser)
+      delete newUser?.password
 
       this.appMailerService.sendActivationMail(newUser)
 
-      delete newUser.activationToken
-
       return {
-        ...tokens,
+        ...generatedToken,
         user: newUser,
       }
     }
@@ -66,4 +95,8 @@ export class AuthService {
   async refreshAccessToken() {}
 
   async getUsers() {}
+
+  /*  buildAuthResponse(user: UserEntity): UserResponseInterface {
+      return { user: { ...user, token: this.tokenService.generateJwt(user) } }
+    }*/
 }

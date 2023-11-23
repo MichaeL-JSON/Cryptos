@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty } from 'class-validator'
+import { Exclude } from 'class-transformer'
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -8,6 +9,7 @@ export class CreateUserDto {
   @IsEmail()
   readonly email: string
 
+  @Exclude({ toPlainOnly: true })
   @IsNotEmpty()
   readonly password: string
 
