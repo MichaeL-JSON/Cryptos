@@ -16,6 +16,7 @@ import { TokenEntity } from '@app/token/entities/token.entity'
 import { instanceToPlain, plainToInstance } from 'class-transformer'
 import { SequreCreateUserDto } from '@app/user/dto/sequre-create-user.dto'
 import { Response } from 'express'
+import * as process from 'process'
 
 @Injectable()
 export class AuthService {
@@ -31,9 +32,9 @@ export class AuthService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       )
     }
-
+    console.log(createUserDto)
     const createdToken: TokenEntity = await this.createToken(createUserDto)
-
+    console.log(createdToken)
     return await this.userService.create(createUserDto, createdToken)
   }
 
@@ -44,7 +45,7 @@ export class AuthService {
   async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
     const dbUser: UserEntity = await this.userService.findOneByEmail(
       loginUserDto.email,
-      ['id', 'username', 'email', 'password', 'avatar', 'token'],
+      ['id', 'username', 'email', 'active', 'password', 'avatar', 'token'],
     )
 
     if (
@@ -54,16 +55,22 @@ export class AuthService {
       throw new UnauthorizedException()
     }
 
-    return dbUser
+    const sequreUserData = this.prepareSequreUserData(dbUser)
+
+    dbUser.token.refreshToken = this.tokenService.generateJwtToken(
+      { ...sequreUserData },
+      process.env.JWT_REFRESH_SECRET,
+      parseInt(process.env.JWT_REFRESH_LIFETIME),
+    )
+
+    return await this.userService.saveUser(dbUser)
   }
 
   // eslint-disable-next-line prettier/prettier
-  async logoutUser() {
-  }
+  async logoutUser() {}
 
   // eslint-disable-next-line
-  async refreshAccessToken() {
-  }
+  async refreshAccessToken() {}
 
   async getUsers() {}
 
@@ -88,6 +95,7 @@ SequreCreateUserDto с помощью декоратора @Exclude({ toPlainOnl
   prepareSequreUserData(createUserDto: CreateUserDto): SequreCreateUserDto {
     const plainCreateUserDto = instanceToPlain(createUserDto)
     delete plainCreateUserDto.password
+    delete plainCreateUserDto.token
 
     return plainToInstance(SequreCreateUserDto, plainCreateUserDto)
   }

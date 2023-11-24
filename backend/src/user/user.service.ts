@@ -38,7 +38,7 @@ export class UserService {
     return await this.saveUser(newUser)
   }
 
-  async saveUser(newUser: UserEntity) {
+  async saveUser(newUser: UserEntity): Promise<UserEntity> {
     return await this.userRepository.save(newUser)
   }
 

@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator'
+import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator'
 import { Exclude } from 'class-transformer'
 
 export class CreateUserDto {
@@ -11,6 +11,8 @@ export class CreateUserDto {
 
   @Exclude({ toPlainOnly: true })
   @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(15)
   readonly password: string
 
   readonly avatar: string
