@@ -50,7 +50,6 @@ export class TokenService {
   async createTokens(
     tokens: Omit<IToken, 'accessToken'>,
   ): Promise<TokenEntity> {
-    console.log(tokens)
     return this.tokenRepository.create(tokens)
   }
 

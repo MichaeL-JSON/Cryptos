@@ -8,7 +8,6 @@ import { TokenService } from '@app/token/token.service'
 import { CreateUserDto } from '@app/user/dto/create-user.dto'
 import { UserService } from '@app/user/user.service'
 import { ResponseUserDataDto } from '@app/user/dto/response-user- data.dto'
-import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import { UserEntity } from '@app/user/entities/user.entity'
 import * as bcrypt from 'bcrypt'
@@ -23,7 +22,6 @@ export class AuthService {
   constructor(
     private readonly tokenService: TokenService,
     private readonly userService: UserService,
-    private readonly appMailerService: AppMailerService,
   ) {}
 
   async registrateUser(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -34,21 +32,7 @@ export class AuthService {
       )
     }
 
-    /*  Преобразование экземпляра класса CreateUserDto в экземпляр класса
-    SequreCreateUserDto с помощью декоратора @Exclude({ toPlainOnly: true })
-    свойства password в  CreateUserDto для исключения передачи конфиденциальных данных в JWT-токен*/
-    const plainCreateUserDto = instanceToPlain(createUserDto)
-    delete plainCreateUserDto.password
-    const sequreCreateUserDto: SequreCreateUserDto = plainToInstance(
-      SequreCreateUserDto,
-      plainCreateUserDto,
-    )
-    console.log('sequreCreateUserDto: ', sequreCreateUserDto)
-    const generatedToken: IToken =
-      await this.tokenService.generateTokens(sequreCreateUserDto)
-
-    const createdToken: TokenEntity =
-      await this.tokenService.createTokens(generatedToken)
+    const createdToken: TokenEntity = await this.createToken(createUserDto)
 
     return await this.userService.create(createUserDto, createdToken)
   }
@@ -74,10 +58,12 @@ export class AuthService {
   }
 
   // eslint-disable-next-line prettier/prettier
-  async logoutUser() {}
+  async logoutUser() {
+  }
 
   // eslint-disable-next-line
-  async refreshAccessToken() {}
+  async refreshAccessToken() {
+  }
 
   async getUsers() {}
 
@@ -94,5 +80,25 @@ export class AuthService {
       maxAge: 5 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     })
+  }
+
+  /*  Преобразование экземпляра класса CreateUserDto в экземпляр класса
+SequreCreateUserDto с помощью декоратора @Exclude({ toPlainOnly: true })
+свойства password в  CreateUserDto для исключения передачи конфиденциальных данных в JWT-токен*/
+  prepareSequreUserData(createUserDto: CreateUserDto): SequreCreateUserDto {
+    const plainCreateUserDto = instanceToPlain(createUserDto)
+    delete plainCreateUserDto.password
+
+    return plainToInstance(SequreCreateUserDto, plainCreateUserDto)
+  }
+
+  async createToken(createUserDto: CreateUserDto): Promise<TokenEntity> {
+    const sequreUserData: SequreCreateUserDto =
+      this.prepareSequreUserData(createUserDto)
+
+    const generatedToken: IToken =
+      await this.tokenService.generateTokens(sequreUserData)
+
+    return await this.tokenService.createTokens(generatedToken)
   }
 }
