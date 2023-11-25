@@ -17,6 +17,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer'
 import { SequreCreateUserDto } from '@app/user/dto/sequre-create-user.dto'
 import { Response } from 'express'
 import * as process from 'process'
+import { LogoutUserDto } from '@app/auth/dto/logout-user.dto'
 
 @Injectable()
 export class AuthService {
@@ -67,7 +68,12 @@ export class AuthService {
   }
 
   // eslint-disable-next-line prettier/prettier
-  async logoutUser() {}
+  async logoutUser(
+    logoutUserDto: LogoutUserDto,
+    refreshToken: string,
+  ): Promise<void> {
+    await this.userService.removeRefreshToken(logoutUserDto, refreshToken)
+  }
 
   // eslint-disable-next-line
   async refreshAccessToken() {}

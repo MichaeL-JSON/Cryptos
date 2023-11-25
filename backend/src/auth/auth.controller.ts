@@ -2,14 +2,16 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   Query,
   Redirect,
+  Req,
   Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import { UserService } from '@app/user/user.service'
 import { AuthService } from '@app/auth/auth.service'
 import { TokenService } from '@app/token/token.service'
@@ -24,6 +26,7 @@ import {
 import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
+import { LogoutUserDto } from '@app/auth/dto/logout-user.dto'
 
 @ApiTags('Auth')
 @ApiExtraModels(CreateUserDto, ResponseUserDataDto)
@@ -106,8 +109,17 @@ export class AuthController {
   }
 
   //Удаление refresh-token из БД
+  @HttpCode(205)
   @Post('logout')
-  async logoutUser() {}
+  async logoutUser(
+    @Body('user') logoutUserDto: LogoutUserDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { refreshToken } = request.cookies
+    await this.authService.logoutUser(logoutUserDto, refreshToken)
+    response.clearCookie('refreshToken')
+  }
 
   //Обновление access-token путём получения refresh-token
   @Get('refresh')

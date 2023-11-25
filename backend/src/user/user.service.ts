@@ -1,8 +1,10 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -18,6 +20,7 @@ import { ConfigService } from '@nestjs/config'
 import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
 import { TokenService } from '@app/token/token.service'
 import { TokenEntity } from '@app/token/entities/token.entity'
+import { LogoutUserDto } from '@app/auth/dto/logout-user.dto'
 
 @Injectable()
 export class UserService {
@@ -44,10 +47,17 @@ export class UserService {
 
   async activate(userId: number, activationToken: string): Promise<string> {
     const dbUser: UserEntity = await this.findOneById(userId)
-    console.log(dbUser)
+    if (!dbUser) {
+      throw new NotFoundException('This user was not found in the database')
+    }
+
+    if (!dbUser.token.activationToken) {
+      throw new ConflictException('User is already activated')
+    }
+
     if (activationToken === dbUser.token.activationToken) {
       dbUser.active = true
-      dbUser.token.activationToken = ''
+      dbUser.token.activationToken = null
       await this.userRepository.save(dbUser)
 
       return `http://${this.configService.get(
@@ -181,5 +191,27 @@ export class UserService {
     const userByUserName = await this.findOneByUserName(createUserDto.username)
 
     return Boolean(userByEmail || userByUserName)
+  }
+
+  async removeRefreshToken(
+    logoutUserDto: LogoutUserDto,
+    refreshToken: string,
+  ): Promise<void> {
+    const { id } = logoutUserDto
+    const dbUser = await this.findOneById(id)
+    if (!dbUser) {
+      throw new NotFoundException('This user was not found in the database')
+    }
+    if (!refreshToken) {
+      throw new UnauthorizedException('The token is missing from the database')
+    }
+    if (refreshToken !== dbUser.token.refreshToken) {
+      throw new UnauthorizedException(
+        'The token stored in the database does not match the one received',
+      )
+    }
+
+    dbUser.token.refreshToken = null
+    await this.userRepository.save(dbUser)
   }
 }

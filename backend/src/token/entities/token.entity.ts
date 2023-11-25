@@ -7,10 +7,10 @@ export class TokenEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ name: 'refresh_token', nullable: false, default: '' })
+  @Column({ name: 'refresh_token', default: '' })
   refreshToken: string
 
-  @Column({ name: 'activation_token', nullable: false, default: '' })
+  @Column({ name: 'activation_token', default: '' })
   activationToken: string
 
   @OneToOne(() => UserEntity, (user) => user.token)
