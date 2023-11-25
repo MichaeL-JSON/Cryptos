@@ -76,7 +76,39 @@ export class AuthService {
   }
 
   // eslint-disable-next-line
-  async refreshAccessToken() {}
+  async refreshJWTTokens(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException()
+    }
+
+    const tokenUserData = this.tokenService.validateToken(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
+    )
+
+    if (!tokenUserData) {
+      throw new UnauthorizedException()
+    }
+
+    const dbUser = await this.userService.findOneById(tokenUserData.id)
+
+    if (
+      !dbUser.token.refreshToken ||
+      dbUser.token.refreshToken !== refreshToken
+    ) {
+      throw new UnauthorizedException()
+    }
+
+    const sequreUserData = this.prepareSequreUserData(dbUser)
+
+    dbUser.token.refreshToken = this.tokenService.generateJwtToken(
+      { ...sequreUserData },
+      process.env.JWT_REFRESH_SECRET,
+      parseInt(process.env.JWT_REFRESH_LIFETIME),
+    )
+
+    return await this.userService.saveUser(dbUser)
+  }
 
   async getUsers() {}
 

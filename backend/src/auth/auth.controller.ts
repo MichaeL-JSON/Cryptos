@@ -29,7 +29,7 @@ import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { LogoutUserDto } from '@app/auth/dto/logout-user.dto'
 
 @ApiTags('Auth')
-@ApiExtraModels(CreateUserDto, ResponseUserDataDto)
+@ApiExtraModels(CreateUserDto, ResponseUserDataDto, LogoutUserDto)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -109,6 +109,16 @@ export class AuthController {
   }
 
   //Удаление refresh-token из БД
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(LogoutUserDto),
+        },
+      },
+    },
+  })
   @HttpCode(205)
   @Post('logout')
   async logoutUser(
@@ -122,8 +132,19 @@ export class AuthController {
   }
 
   //Обновление access-token путём получения refresh-token
-  @Get('refresh')
-  async refreshAccessToken() {}
+  @Post('refresh')
+  async refreshAccessToken(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { refreshToken } = request.cookies
+    const userData: UserEntity =
+      await this.authService.refreshJWTTokens(refreshToken)
+
+    this.authService.setCookie(response, userData)
+
+    return this.authService.buildAuthResponse(userData)
+  }
 
   //Тестовый эндпойнт, доступный только авторизованным пользователям
   @Get('users')

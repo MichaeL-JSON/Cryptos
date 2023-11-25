@@ -7,6 +7,7 @@ import { TokenEntity } from '@app/token/entities/token.entity'
 import { SequreCreateUserDto } from '@app/user/dto/sequre-create-user.dto'
 import * as bcrypt from 'bcrypt'
 import { IToken } from '@app/common/interfaces/itoken.interface'
+import { UserEntity } from '@app/user/entities/user.entity'
 
 @Injectable()
 export class TokenService {
@@ -55,5 +56,13 @@ export class TokenService {
     tokens: Omit<IToken, 'accessToken'>,
   ): Promise<TokenEntity> {
     return this.tokenRepository.create(tokens)
+  }
+
+  validateToken(refreshToken: string, secret): UserEntity | null {
+    try {
+      return jwt.verify(refreshToken, secret) as UserEntity
+    } catch (e) {
+      return null
+    }
   }
 }
