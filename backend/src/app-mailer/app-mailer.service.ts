@@ -33,29 +33,36 @@ export class AppMailerService {
     })
   }
 
-  generateHtmlRegistrationMessage(newUser: Omit<UserEntity, 'password'>) {
+  generateHtmlRegistrationMessage(
+    newUser: Omit<UserEntity, 'password'>,
+    activationToken: string,
+  ) {
     return `
         <p>You were registered under the name ${
           newUser.username
         } on the site Cryptos!</p>
         <p>Please, use this link to <a href='${this.generateActivationLink(
           newUser,
+          activationToken,
         )}'>confirm registration and activate your account!</a></p>`
   }
 
-  generateActivationLink(newUser: Omit<UserEntity, 'password'>) {
+  generateActivationLink(
+    newUser: Omit<UserEntity, 'password'>,
+    activationToken: string,
+  ) {
     return `http://${this.configService.get(
       'API_HOST',
     )}:${this.configService.get('API_PORT')}/${this.configService.get(
       'API_PREFIX',
-    )}/auth/activate?userId=${newUser.id}&activationToken=${
-      newUser.token.activationToken
-    }`
+    )}/auth/activate?userId=${newUser.id}&activationToken=${activationToken}`
   }
 
-  sendActivationMail(newUser: Omit<UserEntity, 'password'>) {
-    const htmlRegistrationMessage =
-      this.generateHtmlRegistrationMessage(newUser)
+  sendActivationMail(newUser: UserEntity, activationToken: string) {
+    const htmlRegistrationMessage = this.generateHtmlRegistrationMessage(
+      newUser,
+      activationToken,
+    )
     this.sendMail(htmlRegistrationMessage, {
       email: newUser.email,
       username: newUser.username,

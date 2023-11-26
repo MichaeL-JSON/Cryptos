@@ -19,7 +19,6 @@ import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ConfigService } from '@nestjs/config'
 import { ChangePasswordDto } from '@app/user/dto/change-password.dto'
 import { TokenService } from '@app/token/token.service'
-import { TokenEntity } from '@app/token/entities/token.entity'
 import { LogoutUserDto } from '@app/auth/dto/logout-user.dto'
 
 @Injectable()
@@ -32,12 +31,8 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(
-    createUserDto: CreateUserDto,
-    tokens: TokenEntity,
-  ): Promise<UserEntity> {
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const newUser = this.userRepository.create(createUserDto)
-    newUser.token = tokens
     return await this.saveUser(newUser)
   }
 

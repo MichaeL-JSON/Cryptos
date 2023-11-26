@@ -32,7 +32,7 @@ export class TokenService {
    * Вызывается при успешной регистрации или аутентификации
    * @param sequreCreateUserDto: SequreCreateUserDto
    */
-  async generateTokens(
+  async generateJwtTokens(
     sequreCreateUserDto: SequreCreateUserDto,
   ): Promise<IToken> {
     const accessToken: string = this.generateJwtToken(
@@ -52,10 +52,8 @@ export class TokenService {
     return { accessToken, refreshToken, activationToken }
   }
 
-  async createTokens(
-    tokens: Omit<IToken, 'accessToken'>,
-  ): Promise<TokenEntity> {
-    return this.tokenRepository.create(tokens)
+  async generateActivationToken(user: UserEntity): Promise<string> {
+    return await bcrypt.hash(user.email, 10)
   }
 
   validateToken(refreshToken: string, secret): UserEntity | null {
@@ -64,5 +62,36 @@ export class TokenService {
     } catch (e) {
       return null
     }
+  }
+
+  async setRefreshToken(tokenId: number, userTokens: IToken) {
+    const queryBuilder = this.tokenRepository
+      .createQueryBuilder()
+      .update(TokenEntity)
+      .set({
+        refreshToken: userTokens.refreshToken,
+      })
+      .where('id = :tokenId', { tokenId })
+      .execute()
+    return queryBuilder
+  }
+
+  async setActivationToken(tokenId: number, activationToken: string) {
+    const queryBuilder = this.tokenRepository
+      .createQueryBuilder()
+      .update(TokenEntity)
+      .set({
+        activationToken,
+      })
+      .where('id = :tokenId', { tokenId })
+      .execute()
+    return queryBuilder
+  }
+
+  createToken(jwtTokens: IToken, activationToken: string): TokenEntity {
+    return this.tokenRepository.create({
+      refreshToken: jwtTokens.refreshToken,
+      activationToken,
+    })
   }
 }

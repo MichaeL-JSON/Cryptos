@@ -27,6 +27,7 @@ import { LoginUserDto } from '@app/user/dto/login-user.dto'
 import { UserEntity } from '@app/user/entities/user.entity'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { LogoutUserDto } from '@app/auth/dto/logout-user.dto'
+import { IToken } from '@app/common/interfaces/itoken.interface'
 
 @ApiTags('Auth')
 @ApiExtraModels(CreateUserDto, ResponseUserDataDto, LogoutUserDto)
@@ -55,17 +56,34 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
     @Body('user') createUserDto: CreateUserDto,
   ): Promise<ResponseUserDataDto> {
-    const dbUser: UserEntity =
+    const registeredUser: UserEntity =
       await this.authService.registrateUser(createUserDto)
 
-    if (dbUser) {
-      console.log('newUser: ', dbUser)
-      delete dbUser?.password
+    if (registeredUser) {
+      const userTokens: IToken =
+        await this.authService.generateJwtTokens(registeredUser)
 
-      this.appMailerService.sendActivationMail(dbUser)
+      const { accessToken, refreshToken } = userTokens
 
-      this.authService.setCookie(response, dbUser)
-      return this.authService.buildAuthResponse(dbUser)
+      const activationToken =
+        await this.tokenService.generateActivationToken(registeredUser)
+
+      registeredUser.token = this.tokenService.createToken(
+        userTokens,
+        activationToken,
+      )
+
+      await this.userService.saveUser(registeredUser)
+
+      this.appMailerService.sendActivationMail(registeredUser, activationToken)
+
+      this.authService.setRefreshTokenHttpOnlyCookie(response, refreshToken)
+
+      return this.authService.buildAuthResponse(
+        registeredUser,
+        accessToken,
+        refreshToken,
+      )
     }
   }
 
@@ -101,11 +119,22 @@ export class AuthController {
     @Body('user') loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const userData: UserEntity = await this.authService.loginUser(loginUserDto)
+    const authenticatedUser: UserEntity =
+      await this.authService.getAuthenticatedUser(loginUserDto)
 
-    this.authService.setCookie(response, userData)
+    const userTokens: IToken =
+      await this.authService.generateJwtTokens(authenticatedUser)
 
-    return this.authService.buildAuthResponse(userData)
+    const { accessToken, refreshToken } = userTokens
+
+    const dbUser: UserEntity = await this.authService.loginUser(
+      authenticatedUser,
+      userTokens,
+    )
+
+    this.authService.setRefreshTokenHttpOnlyCookie(response, refreshToken)
+
+    return this.authService.buildAuthResponse(dbUser, accessToken, refreshToken)
   }
 
   //Удаление refresh-token из БД
@@ -137,13 +166,24 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { refreshToken } = request.cookies
-    const userData: UserEntity =
-      await this.authService.refreshJWTTokens(refreshToken)
+    const { refreshToken: oldRefreshToken } = request.cookies
+    const updateableUser: UserEntity =
+      await this.authService.getUpdateableUser(oldRefreshToken)
 
-    this.authService.setCookie(response, userData)
+    const userTokens: IToken =
+      await this.authService.generateJwtTokens(updateableUser)
 
-    return this.authService.buildAuthResponse(userData)
+    const { accessToken, refreshToken } = userTokens
+
+    await this.authService.refreshJWTTokens(updateableUser, userTokens)
+
+    this.authService.setRefreshTokenHttpOnlyCookie(response, refreshToken)
+
+    return this.authService.buildAuthResponse(
+      updateableUser,
+      accessToken,
+      refreshToken,
+    )
   }
 
   //Тестовый эндпойнт, доступный только авторизованным пользователям

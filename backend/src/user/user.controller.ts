@@ -42,29 +42,6 @@ export class UserController {
     return { url: await this.userService.activate(userId, token) }
   }
 
-  /*  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        user: {
-          $ref: getSchemaPath(UpdateUserDto),
-        },
-      },
-    },
-  })
-  @Put('user')
-  @UseGuards(AuthGuard)
-  async updateCurrentUser(
-    @User('id') currentUserId: number,
-    @Body('user') updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseInterface> {
-    const updatedUser = await this.userService.updateUser(
-      currentUserId,
-      updateUserDto,
-    )
-    return this.userService.buildUserResponse(updatedUser)
-  }*/
-
   @ApiExcludeEndpoint()
   @Get()
   findAll() {

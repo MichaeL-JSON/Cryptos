@@ -1,6 +1,6 @@
 import { OmitType } from '@nestjs/swagger'
 import { CreateUserDto } from '@app/user/dto/create-user.dto'
-import { IsNotEmpty } from 'class-validator'
+import { IsNotEmpty, IsString } from 'class-validator'
 
 export class SequreUserDataDto extends OmitType(CreateUserDto, [
   'password',
@@ -16,4 +16,10 @@ export class SequreUserDataDto extends OmitType(CreateUserDto, [
 
   @IsNotEmpty()
   readonly updatedAt: Date
+
+  @IsString()
+  readonly accessToken: string
+
+  @IsString()
+  readonly refreshToken: string
 }
