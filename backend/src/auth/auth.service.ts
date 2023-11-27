@@ -78,7 +78,7 @@ export class AuthService {
 
   async getUpdateableUser(refreshToken: string): Promise<UserEntity> {
     if (!refreshToken) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('RefreshToken not received')
     }
 
     const tokenUserData = this.tokenService.validateToken(
@@ -87,7 +87,7 @@ export class AuthService {
     )
 
     if (!tokenUserData) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('The token has expired')
     }
 
     const dbUser = await this.userService.findOneById(tokenUserData.id)

@@ -162,10 +162,10 @@ export class AuthController {
 
   //Обновление access-token путём получения refresh-token
   @Post('refresh')
-  async refreshAccessToken(
+  async refreshToken(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<ResponseUserDataDto> {
     const { refreshToken: oldRefreshToken } = request.cookies
     const updateableUser: UserEntity =
       await this.authService.getUpdateableUser(oldRefreshToken)

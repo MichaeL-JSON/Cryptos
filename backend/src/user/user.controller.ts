@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger'
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
+import { ResponseUserListDto } from '@app/user/dto/response-userList.dto'
 
 @ApiTags('Users')
 @ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
@@ -42,10 +43,9 @@ export class UserController {
     return { url: await this.userService.activate(userId, token) }
   }
 
-  @ApiExcludeEndpoint()
-  @Get()
-  findAll() {
-    return this.userService.findAll()
+  @Get('users/all')
+  async findAll(): Promise<ResponseUserListDto> {
+    return { users: await this.userService.findAll() }
   }
 
   @ApiExcludeEndpoint()

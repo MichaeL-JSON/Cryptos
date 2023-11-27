@@ -93,8 +93,8 @@ export class UserService {
     return updatedUser
   }
 
-  findAll() {
-    return `This action returns all user`
+  async findAll(): Promise<UserEntity[]> {
+    return this.userRepository.find()
   }
 
   findOne(id: number) {
