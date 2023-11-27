@@ -56,9 +56,9 @@ export class TokenService {
     return await bcrypt.hash(user.email, 10)
   }
 
-  validateToken(refreshToken: string, secret): SequreCreateUserDto | null {
+  validateToken(jwtToken: string, secret): SequreCreateUserDto | null {
     try {
-      return jwt.verify(refreshToken, secret) as SequreCreateUserDto
+      return jwt.verify(jwtToken, secret) as SequreCreateUserDto
     } catch (e) {
       return null
     }

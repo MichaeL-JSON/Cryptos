@@ -1,13 +1,16 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { NextFunction, Response } from 'express'
 import { ExpressRequestInterface } from '@app/types/expressRequest.interface'
-import { verify } from 'jsonwebtoken'
 import { UserService } from '@app/user/user.service'
-import { UserType } from '@app/user/types/user.type'
+import { TokenService } from '@app/token/token.service'
+import * as process from 'process'
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly tokenService: TokenService,
+  ) {}
 
   async use(req: ExpressRequestInterface, res: Response, next: NextFunction) {
     //Проверка наличия токена авторизации в заголовке запроса пользователя
@@ -15,15 +18,23 @@ export class AuthMiddleware implements NestMiddleware {
       req.user = null
       next()
       //Предотвращение выполнения последующего кода при отсутствии JWT-token.
+      //Также можно выбросить ошибку авторизации
+      // throw new UnauthorizedException('Authorization header not received')
       return
     }
 
-    //Получение токена авторизации из заголовков запроса пользователя
+    //Получение (Bearer-token) access-токена авторизации из заголовков запроса пользователя
     const token = req.headers.authorization.split(' ')[1]
 
-    //Декодирование JWT токена авторизации
+    //Можно выбросить ошибку при неполучении Bearer-токена
+
+    //Декодирование JWT access-токена авторизации (Bearer-token)
     try {
-      const decode = verify(token, process.env.JWT_ACCESS_SECRET) as UserType
+      // const decode = verify(token, process.env.JWT_ACCESS_SECRET) as UserType
+      const decode = this.tokenService.validateToken(
+        token,
+        process.env.JWT_ACCESS_SECRET,
+      )
       req.user = await this.userService.findOneById(decode.id)
       next()
     } catch (e) {

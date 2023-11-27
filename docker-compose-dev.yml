@@ -1,23 +1,23 @@
-version: '3.9'
+version: '3'
 services:
   postgres_server:
     image: "postgres:15.3-alpine3.18"
     container_name: postgres_cryptos_container
     restart: "always"
     env_file:
-      - ./backend/.prod.env
+      - ./backend/.env
     ports:
       - "5432:5432"
     volumes:
       - ./backend/postgres:/var/lib/postgresql/data
   backend:
-    image: "mag1980/cryptos_nestjs_api:v2"
+    build: ./backend
     container_name: nestjs_api
     restart: always
     ports:
-      - "5000:5000"
+      - '5000:5000'
     env_file:
-      - ./backend/.prod.env
+      - ./backend/.env
     environment:
       DB_HOST: postgres_server
     volumes:
@@ -29,7 +29,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - "8888:8080"
+      - '8888:8080'
 
 
 
