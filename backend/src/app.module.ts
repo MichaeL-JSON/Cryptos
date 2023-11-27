@@ -7,6 +7,7 @@ import { ArticleModule } from './article/article.module'
 import { UserModule } from '@app/user/user.module'
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware'
 import { AuthModule } from './auth/auth.module'
+import { TokenModule } from '@app/token/token.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module'
     ArticleModule,
     UserModule,
     AuthModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

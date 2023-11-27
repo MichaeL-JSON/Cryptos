@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Redirect,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -24,6 +25,7 @@ import {
 import { AppMailerService } from '@app/app-mailer/app-mailer.service'
 import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
 import { ResponseUserListDto } from '@app/user/dto/response-userList.dto'
+import { AuthGuard } from '@app/user/guards/auth.guard'
 
 @ApiTags('Users')
 @ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
@@ -43,6 +45,7 @@ export class UserController {
     return { url: await this.userService.activate(userId, token) }
   }
 
+  @UseGuards(AuthGuard)
   @Get('users/all')
   async findAll(): Promise<ResponseUserListDto> {
     return { users: await this.userService.findAll() }
