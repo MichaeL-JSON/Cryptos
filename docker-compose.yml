@@ -16,11 +16,17 @@ services:
       - "5000:5000"
     environment:
       DB_HOST: postgres_server
-    volumes:
-
-      - /app/node_modules
     depends_on:
       - postgres_server
+  frontend:
+    image: mag1980/cryptos_frontend:v2
+    container_name: react_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
   adminer:
     image: adminer
     restart: always
