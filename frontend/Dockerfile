@@ -7,4 +7,5 @@ RUN npm run build
 
 FROM nginx as PRODUCTION
 COPY --from=BUILD_IMAGE /app/vite-build/dist/ /usr/share/nginx/html
+COPY ./nginx/conf/nginx.conf/ /etc/nginx/conf.d/
 EXPOSE 80
