@@ -14,4 +14,6 @@ RUN npm i -g @nestjs/cli
 
 COPY . ./
 
-CMD ["concurrently", "npm:start:dev", "npm:mg:run" ]
+RUN npm run build
+
+CMD ["npm", "run", "start"]

@@ -4,6 +4,7 @@ services:
     image: "postgres:15.3-alpine3.18"
     container_name: postgres_cryptos_container
     restart: "always"
+    env_file: stack.env
     ports:
       - "5432:5432"
     volumes:
@@ -12,6 +13,7 @@ services:
     image: "mag1980/cryptos_nestjs_api:v2"
     container_name: nestjs_api
     restart: always
+    env_file: stack.env
     ports:
       - "5000:5000"
     environment:
@@ -19,12 +21,11 @@ services:
     depends_on:
       - postgres_server
   frontend:
-    image: mag1980/cryptos_frontend:v2
-    container_name: react_nginx
+    image: mag1980/cryptos_frontend:v1
+    container_name: react_spa
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:8080"
     depends_on:
       - backend
   adminer:

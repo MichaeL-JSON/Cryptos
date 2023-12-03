@@ -8,11 +8,15 @@ export default defineConfig({
     // Relative to the root
     outDir: "../dist"
   },
-  publicDir: 'assets',
+  publicDir: "assets",
   plugins: [
     // …
     react()
   ],
+  preview: {
+    host: true,
+    port: 8080
+  },
   esbuild: {
     loader: "jsx",
     include: [
