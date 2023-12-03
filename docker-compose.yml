@@ -19,11 +19,12 @@ services:
     depends_on:
       - postgres_server
   frontend:
-    image: mag1980/cryptos_frontend:v1
-    container_name: react_spa
+    image: mag1980/cryptos_frontend:v2
+    container_name: react_nginx
     restart: always
     ports:
-      - "80:8080"
+      - "80:80"
+      - "443:443"
     depends_on:
       - backend
   adminer:
