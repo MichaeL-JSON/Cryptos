@@ -33,14 +33,22 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-#      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      # Файл с нужными настройками nginx уже помещён в образ mag1980/cryptos_frontend
+      # Раскомментировать при необходимости передачи настроек сервера извне контейнера
+      #- ./nginx/conf/:/etc/nginx/conf.d/:ro
       - ./certbot/www:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/nginx/ssl/:ro
     depends_on:
       - backend
   certbot:
     image: certbot/certbot:latest
+    depends_on:
+      - frontend
+    container_name: certbot
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
+    command:
+      - certonly --webroot --webroot-path /var/www/certbot/ --email agm140580@gmail.com --agree-tos  -d cryptos-tm.ddns.net
+
 
