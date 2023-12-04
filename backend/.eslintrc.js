@@ -21,5 +21,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'linebreak-style': ['error', process.env.NODE_ENV === 'prod' ? "unix" : "windows"],
+    'no-multiple-empty-lines': 'error',
   },
 }

@@ -4,43 +4,101 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Query,
+  Redirect,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { UserResponseInterface } from '@app/user/types/userResponse.interface'
+import { LoginUserDto } from '@app/user/dto/login-user.dto'
+import {
+  ApiBody,
+  ApiExcludeEndpoint,
+  ApiExtraModels,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger'
+import { AppMailerService } from '@app/app-mailer/app-mailer.service'
+import { ForgotPasswordDto } from '@app/user/dto/forgot-password.dto'
+import { ResponseUserListDto } from '@app/user/dto/response-userList.dto'
+import { AuthGuard } from '@app/user/guards/auth.guard'
 
+@ApiTags('Users')
+@ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto, ForgotPasswordDto)
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly appMailerService: AppMailerService,
+  ) {}
 
-  @Post('users')
-  async create(
-    @Body('user') createUserDto: CreateUserDto,
-  ): Promise<UserResponseInterface> {
-    const newUser = await this.userService.create(createUserDto)
-    return { user: this.userService.buildUserResponse(newUser) }
+  @Redirect()
+  @Get('user/activate')
+  async activate(
+    @Query('id') userId: number,
+    @Query('token') token: string,
+  ): Promise<{ url: string }> {
+    return { url: await this.userService.activate(userId, token) }
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll()
+  @UseGuards(AuthGuard)
+  @Get('users/all')
+  async findAll(): Promise<ResponseUserListDto> {
+    return { users: await this.userService.findAll() }
   }
 
+  @ApiExcludeEndpoint()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto)
-  }
-
+  @ApiExcludeEndpoint()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id)
   }
+
+  @Get('user/test-mail-sending')
+  async testMailSending() {
+    await this.appMailerService.sendMail()
+  }
+
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        user: {
+          $ref: getSchemaPath(ForgotPasswordDto),
+        },
+      },
+    },
+  })
+  @Post('user/forgot-password')
+  @UsePipes(new ValidationPipe())
+  async forgotPassword(
+    @Body('user') forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<void> {
+    await this.userService.forgotPassword(forgotPasswordDto)
+  }
+
+  /*  @ApiBody({ type: ChangePasswordDto })
+  @Put('user/change-password')
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
+  async changePassword(
+    @User() userEntity: UserEntity,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<UserResponseInterface> {
+    const updatedUser = await this.userService.changePassword(
+      userEntity.id,
+      changePasswordDto,
+    )
+
+    return this.userService.buildUserResponse(updatedUser)
+  }*/
 }

@@ -1,4 +1,4 @@
-FROM node:18-alpine3.18
+FROM node:21-alpine3.17
 
 WORKDIR /app
 
@@ -8,8 +8,10 @@ COPY package* ./
 
 RUN npm install
 
-RUN npm install -g concurrently
+RUN npm i -g @nestjs/cli
 
 COPY . ./
 
-CMD ["concurrently", "npm:mg:run", "npm:dev"]
+RUN npm run build
+
+CMD ["npm", "run", "start"]

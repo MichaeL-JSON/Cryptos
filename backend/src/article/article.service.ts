@@ -37,6 +37,10 @@ export class ArticleService {
     console.log('Store articles')
   }
 
+  async createArticle() {
+    return 'Save article to DB'
+  }
+
   async findAll(): Promise<ArticleEntity[]> {
     return await this.articleRepository.find()
   }

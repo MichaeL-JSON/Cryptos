@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  postgres_server:
+    image: "postgres:15.3-alpine3.18"
+    container_name: postgres_cryptos_container
+    restart: "always"
+    env_file: loc.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/postgres:/var/lib/postgresql/data
+  backend:
+    image: "mag1980/cryptos_nestjs_api:v2"
+    container_name: nestjs_api
+    restart: always
+    env_file: loc.env
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: postgres_server
+    depends_on:
+      - postgres_server
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8888:8080"
+  frontend:
+    image: mag1980/cryptos_frontend:v2
+    container_name: react_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+    depends_on:
+      - backend
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+
