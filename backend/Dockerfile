@@ -8,8 +8,6 @@ COPY package* ./
 
 RUN npm install
 
-RUN npm install -g concurrently
-
 RUN npm i -g @nestjs/cli
 
 COPY . ./
