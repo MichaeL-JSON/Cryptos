@@ -1,13 +1,15 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const newsApi = createApi({
-  reducerPath: 'newsApi',
-  baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:5000/api/'}),
+  reducerPath: "newsApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://cryptos-tm.ddns.net/api/"
+  }),
   endpoints: builder => ({
     getAllNews: builder.query({
-      query: () => '/articles'
+      query: () => "/articles"
     })
   })
-})
+});
 
-export const {useGetAllNewsQuery} = newsApi;
+export const { useGetAllNewsQuery } = newsApi;
