@@ -1,2 +1,2 @@
 export { Modal } from "./ui/Modal";
-export { Registration } from "./ui/Registration";
+export { Auth } from "./ui/Auth";
