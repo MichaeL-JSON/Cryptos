@@ -95,10 +95,10 @@ const Navbar = () => {
           >
             Log in <span aria-hidden="true">&rarr;</span>
           </button>
-          <Modal active={modalActive} setActive={setModalActive}>
-            <Auth />
-          </Modal>
         </div>
+        <Modal active={modalActive} setActive={setModalActive}>
+          <Auth />
+        </Modal>
       </nav>
       <Dialog
         as="div"
