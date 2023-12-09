@@ -12,7 +12,8 @@ import {
 import storage from "redux-persist/lib/storage";
 import { coinApi } from "./coinApi";
 import { newsReducer } from "./news/news";
-import { converterReducer } from "./converter.api";
+import { converterReducer } from "./converter.slice";
+import { statusReducer } from "./status.slice";
 import { newsApi } from "./news/newsApi";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { authApi } from "./authApi";
@@ -30,7 +31,8 @@ const rootReducer = combineReducers({
   [newsApi.reducerPath]: newsApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   news: newsReducer,
-  converter: converterReducer
+  converter: converterReducer,
+  status: statusReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

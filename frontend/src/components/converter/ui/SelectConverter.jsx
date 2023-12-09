@@ -10,7 +10,7 @@ import {
   updateCurrency,
   updatePrice,
   updateValue
-} from "../../../redux/converter.api";
+} from "../../../redux/converter.slice";
 
 import "../styles/index.css";
 

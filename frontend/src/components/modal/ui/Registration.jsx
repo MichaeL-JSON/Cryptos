@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form'
 
 import frame from "/Frame.svg";
@@ -7,6 +7,8 @@ import redSvg from "/Ellipse 21.svg";
 import graySvg from "/Ellipse 22.svg";
 import { useRegistrationMutation } from '../../../redux/authApi';
 import { ErrorMessage, Label } from '../../common';
+import { updateStatus } from '../../../redux/status.slice'
+import { useDispatch } from 'react-redux';
 
 export const Registration = ({ setAuthValue }) => {
   const {
@@ -18,7 +20,9 @@ export const Registration = ({ setAuthValue }) => {
 
   const [passwordVisible, setPasswordVisible] = useState(true)
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(true)
-  const [registration] = useRegistrationMutation()
+  const [registration, { data, isLoading, isError }] = useRegistrationMutation()
+
+  const dispatch = useDispatch()
 
   const handleSubmitForm = async (data) => {
     if (isValid) {
@@ -29,6 +33,21 @@ export const Registration = ({ setAuthValue }) => {
       })
     }
   };
+
+  useEffect(() => {
+    if (isLoading) {
+      dispatch(updateStatus('loading'))
+      return
+    }
+    dispatch(updateStatus('panding'))
+
+  }, [isLoading])
+
+  useEffect(() => {
+    if (data) {
+      dispatch(updateStatus('saccess'))
+    }
+  }, [data])
 
   return (
     <form className='flex flex-col justify-between h-full pb-[60px] sm:pb-[90px]' onSubmit={handleSubmit(handleSubmitForm)}>
@@ -233,7 +252,11 @@ export const Registration = ({ setAuthValue }) => {
         <div className="hidden md:block absolute top-[105px] left-[76px] w-[4px] h-[265px] bg-[#4D4AC8] z-10 "></div>
       </div>
 
-      <div className='flex md:block justify-center items-center md:mt-[-25px]'>
+      <div className='relative flex md:block justify-center items-center md:mt-[-25px]'>
+        {isError && <p className='absolute flex items-center justify-center w-full bottom-[34px] sm:bottom-[54px] md:bottom-[128px] text-[#ee2626d1] text-[9px] sm:text-[12px] font-bold'>
+          User with this email already exists
+        </p>
+        }
         <div className="flex justify-center">
           <button
             className={`bg-[#E2E1FF] flex items-center justify-center rounded-[11px] text-[16px] sm:text-[22px] py-[5px] px-[30px] w-[170px] h-[33px] sm:w-[242px] sm:h-[41px] md:px-[30px] text-[#4D4AC8] font-semibold ${!isValid && 'opacity-60'}`}
@@ -243,11 +266,11 @@ export const Registration = ({ setAuthValue }) => {
           </button>
         </div>
         <div className="flex items-center justify-center md:mt-[22px] md:mb-[28px] ml-[12px] md:ml-[0px] gap-[7px]">
-        <div className="text-[#454380]  font-semibold text-[16px] sm:text-[22px]">
+          <div className="text-[#454380]  font-semibold text-[16px] sm:text-[22px]">
             <p className='hidden md:block'>do you have an account?</p>
             <p className='block md:hidden'>or</p>
           </div>
-          <img className='mb-[-5px] sm:mb-[-7px]' src={frame} alt="logo"/>
+          <img className='mb-[-5px] sm:mb-[-7px]' src={frame} alt="logo" />
           <button type='button' className="text-[#4D4AC8] text-[16px] sm:text-[22px] font-bold" onClick={() => setAuthValue("Login")}>
             login
           </button>
