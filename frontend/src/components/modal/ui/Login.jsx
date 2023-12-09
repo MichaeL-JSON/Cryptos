@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form'
 
 import frame from "/Frame.svg";
@@ -7,6 +7,9 @@ import redSvg from "/Ellipse 21.svg";
 import graySvg from "/Ellipse 22.svg";
 import { useLoginMutation } from '../../../redux/authApi';
 import { ErrorMessage, Label } from '../../common';
+import { updateStatus } from '../../../redux/status.slice'
+import { useDispatch } from 'react-redux';
+
 
 export const Login = ({ setAuthValue }) => {
   const {
@@ -17,14 +20,30 @@ export const Login = ({ setAuthValue }) => {
   } = useForm({ mode: 'onBlur' })
 
   const [passwordVisible, setPasswordVisible] = useState(true)
-  const [login] = useLoginMutation()
+  const [login, { data, isLoading, isError }] = useLoginMutation()
 
+  const dispatch = useDispatch()
 
   const handleSubmitForm = async (data) => {
     if (isValid) {
       await login(data)
     }
   }
+
+  useEffect(() => {
+    if (isLoading) {
+      dispatch(updateStatus('loading'))
+      return
+    }
+    dispatch(updateStatus('panding'))
+
+  }, [isLoading])
+
+  useEffect(() => {
+    if (data) {
+      dispatch(updateStatus('saccess'))
+    }
+  }, [data])
 
   return (
     <form className='flex flex-col justify-between h-full pb-[60px] sm:pb-[90px]' onSubmit={handleSubmit(handleSubmitForm)}>
@@ -115,7 +134,12 @@ export const Login = ({ setAuthValue }) => {
         <div className="hidden md:block absolute top-[105px] left-[76px] w-[4px] h-[94px] bg-[#4D4AC8] z-10 "></div>
       </div>
 
-      <div className='flex md:block justify-center items-center md:mt-[-25px]'>
+      <div className='relative flex md:block justify-center items-center md:mt-[-25px]'>
+        {isError && <p className='absolute flex items-center justify-center w-full bottom-[34px] sm:bottom-[54px] md:bottom-[136px] text-[#ee2626d1] text-[9px] sm:text-[12px] font-bold'>
+          Not found user with this email or password
+        </p>
+        }
+
         <div className="flex justify-center">
           <button
             className={`bg-[#E2E1FF] flex items-center justify-center rounded-[11px] text-[16px] sm:text-[22px] py-[5px] px-[30px] w-[80px] sm:w-[138px] h-[33px] sm:h-[41px] md:px-[30px] text-[#4D4AC8] font-semibold ${!isValid && 'opacity-60'}`}

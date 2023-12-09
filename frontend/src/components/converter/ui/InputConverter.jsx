@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateValue } from "../../../redux/converter.api";
+import { updateValue } from "../../../redux/converter.slice";
 
 export const InputConverter = ({ converterKey }) => {
   const converterState = useSelector(state => state.converter[converterKey]);
