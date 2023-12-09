@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
-import { Modal, Registration } from "./modal";
+import { Modal, Auth } from "./modal";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -85,9 +85,6 @@ const Navbar = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {/* <a href="#" className="text-xl font-semibold leading-6 text-gray-900">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a> */}
           <button
             onClick={() => setModalActive(true)}
             type="button"
@@ -95,10 +92,10 @@ const Navbar = () => {
           >
             Log in <span aria-hidden="true">&rarr;</span>
           </button>
-          <Modal active={modalActive} setActive={setModalActive}>
-            <Registration />
-          </Modal>
         </div>
+        <Modal active={modalActive} setActive={setModalActive}>
+          <Auth />
+        </Modal>
       </nav>
       <Dialog
         as="div"
@@ -140,15 +137,15 @@ const Navbar = () => {
                 ))}
               </div>
               <div className="py-6">
-                <a
-                  href="#"
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setModalActive(true)
+                  }}
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Log in
-                </a>
-                {/* <button type="button">
-                  Log in open
-                </button> */}
+                </button>
               </div>
             </div>
           </div>
