@@ -46,18 +46,16 @@ export class UserService {
       throw new NotFoundException('This user was not found in the database')
     }
 
-    if (!dbUser.token.activationToken) {
+    if (dbUser.token.activationToken === '') {
       throw new ConflictException('User is already activated')
     }
 
     if (activationToken === dbUser.token.activationToken) {
       dbUser.active = true
-      dbUser.token.activationToken = null
+      dbUser.token.activationToken = ''
       await this.userRepository.save(dbUser)
 
-      return `http://${this.configService.get(
-        'CLIENT_HOST',
-      )}:${this.configService.get('CLIENT_PORT')}/login`
+      return `https://${this.configService.get('CLIENT_HOST')}`
     }
     throw new HttpException('Token is not valid', HttpStatus.NOT_ACCEPTABLE)
   }
