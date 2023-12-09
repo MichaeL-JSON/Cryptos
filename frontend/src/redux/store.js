@@ -15,6 +15,7 @@ import { newsReducer } from "./news/news";
 import { converterReducer } from "./converter.api";
 import { newsApi } from "./news/newsApi";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { authApi } from "./authApi";
 
 const persistConfig = {
   key: "root",
@@ -27,6 +28,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   [coinApi.reducerPath]: coinApi.reducer,
   [newsApi.reducerPath]: newsApi.reducer,
+  [authApi.reducerPath]: authApi.reducer,
   news: newsReducer,
   converter: converterReducer
 });
@@ -40,7 +42,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
       }
-    }).concat(coinApi.middleware, newsApi.middleware)
+    }).concat(coinApi.middleware, newsApi.middleware, authApi.middleware)
 });
 
 setupListeners(store.dispatch);

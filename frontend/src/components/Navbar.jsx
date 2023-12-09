@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
-import { Modal, Registration } from "./modal";
+import { Modal, Auth } from "./modal";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -95,10 +95,10 @@ const Navbar = () => {
           >
             Log in <span aria-hidden="true">&rarr;</span>
           </button>
-          <Modal active={modalActive} setActive={setModalActive}>
-            <Registration />
-          </Modal>
         </div>
+        <Modal active={modalActive} setActive={setModalActive}>
+          <Auth />
+        </Modal>
       </nav>
       <Dialog
         as="div"

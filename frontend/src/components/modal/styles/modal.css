@@ -15,15 +15,12 @@
 }
 
 .modal__content {
-  padding: 0 53px;
   border: 1px solid #4d4ac8;
   border-radius: 30px;
   box-shadow: 1px 2px 24px 0px rgba(77, 74, 200, 0.42);
   background: #ffffff;
   transform: scale(0.5);
   transition: 0.4s all;
-  width: 540px;
-  height: 540px;
 }
 
 .modal.active {
