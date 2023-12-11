@@ -3,6 +3,7 @@ import { AppModule } from './app.module'
 import * as process from 'process'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as cookieParser from 'cookie-parser'
+import { runMigrations } from '@app/migration-runner'
 
 if (!process.env.IS_TS_NODE) {
   require('module-alias/register.js')
@@ -30,6 +31,8 @@ async function bootstrap() {
     .build()
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('swagger', app, document)
+
+  await runMigrations()
 
   await app.listen(process.env.API_PORT)
 }
